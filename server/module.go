@@ -7,6 +7,10 @@ import (
 
 type IModuleFactory interface {
 	HealthCheckModule()
+	UserModule() IUserModule
+	AccountModule() IAccountModule
+	PlanModule() IPlanModule
+	TransactionModule() ITransactionModule
 }
 
 type moduleFactory struct {

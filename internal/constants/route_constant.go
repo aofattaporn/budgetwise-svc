@@ -2,12 +2,13 @@ package constants
 
 type route struct {
 	HEALTHCHECK string
-}
-
-var routeConstantVar = &route{
-	HEALTHCHECK: "/health",
+	SALARY      string
 }
 
 func ROUTE() *route {
-	return routeConstantVar
+	return &route{
+		HEALTHCHECK: "/health",
+		SALARY:      "/users/salary",
+	}
+
 }
