@@ -8,5 +8,6 @@ import (
 func (m *moduleFactory) HealthCheckModule() {
 	h := handlers.HealthCheckHandler(m.s.cfg.App())
 
+	// handlers
 	m.r.Get(constants.ROUTE().HEALTHCHECK, h.HeathCheckHandler)
 }
