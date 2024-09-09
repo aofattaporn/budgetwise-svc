@@ -63,8 +63,6 @@ func (s *fiberServer) Start() {
 
 	router := s.app.Group(s.cfg.App().ContextPath())
 	modules := InitModule(router, s, mid)
-
-	fmt.Println("Start up - healpcheck")
 	modules.HealthCheckModule()
 
 	s.app.Use(mid.RouterNotFound())

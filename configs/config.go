@@ -69,12 +69,6 @@ func LoadConfig(path string) (IConfig, error) {
 				isJson: viperConfig.Log.Console.IsJson,
 				color:  viperConfig.Log.Console.Color,
 			},
-			file: file{
-				enable: viperConfig.Log.File.Enable,
-				name:   viperConfig.Log.File.Name,
-				level:  viperConfig.Log.File.Level,
-				isJson: viperConfig.Log.File.IsJson,
-			},
 		},
 	}
 

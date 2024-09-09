@@ -3,11 +3,6 @@ log:
     level: info
     isJson: true
     color: false
-  file:
-    enable: false
-    name: ./console_log.log
-    level: info
-    isJson: true
 
 database:
   dbName: test_local
@@ -21,7 +16,7 @@ database:
 
 server:
   port: 8080
-  contextPath: /mock_server_loacal
+  contextPath: /api
   name: mock_server_loacal
   version: v0.1.0
   bodyLimit: -1

@@ -37,22 +37,6 @@ func InitZapLogger(cfg configs.ILogConfig) (ILogger, error) {
 
 	cores := []zapcore.Core{}
 
-	if cfg.FileEnable() {
-		f, err := os.OpenFile(cfg.FileName(), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-		if err != nil {
-			return nil, fmt.Errorf("failed to open log file: %v", err)
-		}
-		level := zap.NewAtomicLevel()
-		if err := level.UnmarshalText([]byte(cfg.ConsoleLevel())); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal console level text: %v", err)
-		}
-		writeSyncer := zapcore.AddSync(f)
-
-		core := zapcore.NewCore(getLogEncoder(cfg.FileIsJson(), false), writeSyncer, level)
-		cores = append(cores, core)
-
-	}
-
 	level := zap.NewAtomicLevel()
 	writeStdout := zapcore.Lock(os.Stdout)
 	if err := level.UnmarshalText([]byte(cfg.ConsoleLevel())); err != nil {
