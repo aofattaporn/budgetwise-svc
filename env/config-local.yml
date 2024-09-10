@@ -5,7 +5,9 @@ log:
     color: false
 
 database:
-  dbName: test_local
+  dbName: mydatabase
+  dbuser: myuser
+  dbpwd: mypassword
   protocol: tcp
   maxOpenConns: 20
   maxIdleConns: 10

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -21,7 +20,7 @@ type IServer interface {
 type fiberServer struct {
 	cfg    configs.IConfig
 	logger log.ILogger
-	db     *sql.DB
+	db     database.IDatabase
 	app    *fiber.App
 }
 

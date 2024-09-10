@@ -34,14 +34,10 @@ func (c *config) Db() IDbConfig {
 }
 
 func (d *db) Url() string {
-	return fmt.Sprintf(
-		"%s:%s@%s(%s)/%s?tls=true&parseTime=true&charset=utf8mb4&loc=Local",
-		d.username,
-		d.password,
-		d.protocol,
-		d.host,
-		d.database,
-	)
+	// dsn := "myuser:mypassword@tcp(127.0.0.1:3306)/mydatabase?charset=utf8mb4&parseTime=True&loc=Local"
+	dns := fmt.Sprintf("%s:%s@%s(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local", d.username, d.password, d.protocol, d.database)
+	return dns
+
 }
 
 func (d *db) MaxOpenConns() int              { return d.maxOpenConns }

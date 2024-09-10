@@ -3,6 +3,8 @@ package server
 import (
 	"github.com/goproject/internal/constants"
 	"github.com/goproject/internal/handlers"
+	"github.com/goproject/internal/repositories"
+	"github.com/goproject/internal/useases"
 )
 
 type IAccountModule interface {
@@ -16,7 +18,9 @@ type accountModule struct {
 
 func (m *moduleFactory) AccountModule() IAccountModule {
 
-	handlers := handlers.AccountHandler()
+	repository := repositories.AccountRepository(m.s.db.GetDb())
+	usecase := useases.AccountUsecase(repository)
+	handlers := handlers.AccountHandler(usecase)
 
 	return &accountModule{
 		moduleFactory: m,
