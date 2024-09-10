@@ -64,6 +64,11 @@ func (s *fiberServer) Start() {
 	modules := InitModule(router, s, mid)
 	modules.HealthCheckModule()
 
+	modules.UserModule().Init()
+	modules.AccountModule().Init()
+	modules.TransactionModule().Init()
+	modules.PlanModule().Init()
+
 	s.app.Use(mid.RouterNotFound())
 
 	c := make(chan os.Signal, 1)

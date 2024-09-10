@@ -1,12 +1,9 @@
 package middlewares
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"runtime/debug"
 	"strings"
-	"time"
 
 	"github.com/goproject/pkg/log"
 
@@ -64,7 +61,7 @@ func (h *middlewaresHandler) Logger() fiber.Handler {
 			return c.Next()
 		}
 
-		startTime := time.Now()
+		// startTime := time.Now()
 		reqHeaders := make(entities.LogHeaders)
 		c.Request().Header.VisitAll(func(key, value []byte) {
 			reqHeaders[string(key)] = string(value)
@@ -72,31 +69,31 @@ func (h *middlewaresHandler) Logger() fiber.Handler {
 
 		defer func() {
 
-			endTime := time.Now()
-			resHeaders := make(entities.LogHeaders)
-			c.Response().Header.VisitAll(func(key, value []byte) {
-				resHeaders[string(key)] = string(value)
-			})
+			// endTime := time.Now()
+			// resHeaders := make(entities.LogHeaders)
+			// c.Response().Header.VisitAll(func(key, value []byte) {
+			// 	resHeaders[string(key)] = string(value)
+			// })
 			// convert json
-			logJson, _ := json.Marshal(&entities.LoggerRequestAndResponse{
-				Method: c.Method(),
-				Path:   c.Path(),
-				Req: entities.LogReq{
-					Headers: reqHeaders,
-					Params:  c.Queries(),
-					Body:    string(c.Body()),
-					Time:    startTime.Format(time.RFC3339Nano),
-				},
-				Res: entities.LogRes{
-					Status:  c.Response().StatusCode(),
-					Headers: resHeaders,
-					Body:    string(c.Response().Body()),
-					Time:    endTime.Format(time.RFC3339Nano),
-				},
-				LatencyMS: fmt.Sprintf("%d", endTime.Sub(startTime).Milliseconds()),
-			})
+			// logJson, _ := json.Marshal(&entities.LoggerRequestAndResponse{
+			// 	Method: c.Method(),
+			// 	Path:   c.Path(),
+			// 	Req: entities.LogReq{
+			// 		Headers: reqHeaders,
+			// 		Params:  c.Queries(),
+			// 		Body:    string(c.Body()),
+			// 		Time:    startTime.Format(time.RFC3339Nano),
+			// 	},
+			// 	Res: entities.LogRes{
+			// 		Status:  c.Response().StatusCode(),
+			// 		Headers: resHeaders,
+			// 		Body:    string(c.Response().Body()),
+			// 		Time:    endTime.Format(time.RFC3339Nano),
+			// 	},
+			// 	LatencyMS: fmt.Sprintf("%d", endTime.Sub(startTime).Milliseconds()),
+			// })
 
-			h.logger.Info(string(logJson))
+			h.logger.Info(string(c.Context().RequestURI()))
 		}()
 
 		return c.Next()

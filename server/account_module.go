@@ -19,7 +19,7 @@ type accountModule struct {
 func (m *moduleFactory) AccountModule() IAccountModule {
 
 	repository := repositories.AccountRepository(m.s.db.GetDb())
-	usecase := useases.AccountUsecase(repository)
+	usecase := useases.AccountUsecase(repository, m.s.logger)
 	handlers := handlers.AccountHandler(usecase)
 
 	return &accountModule{
@@ -32,5 +32,6 @@ func (m *accountModule) Init() {
 
 	// handler
 	m.r.Get(constants.ROUTE().ACCOUNTS, m.h.GetAllAccounts)
+	m.r.Post(constants.ROUTE().ACCOUNTS, m.h.CreateAccount)
 
 }
