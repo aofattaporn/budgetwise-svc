@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+type AccountId = int
+
 type AccountsList = []Account
 
 type Account struct {

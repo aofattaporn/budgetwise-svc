@@ -20,7 +20,7 @@ func (m *moduleFactory) AccountModule() IAccountModule {
 
 	repository := repositories.AccountRepository(m.s.db.GetDb())
 	usecase := useases.AccountUsecase(repository, m.s.logger)
-	handlers := handlers.AccountHandler(usecase)
+	handlers := handlers.AccountHandler(usecase, m.s.logger)
 
 	return &accountModule{
 		moduleFactory: m,
@@ -31,7 +31,10 @@ func (m *moduleFactory) AccountModule() IAccountModule {
 func (m *accountModule) Init() {
 
 	// handler
-	m.r.Get(constants.ROUTE().ACCOUNTS, m.h.GetAllAccounts)
 	m.r.Post(constants.ROUTE().ACCOUNTS, m.h.CreateAccount)
+	m.r.Get(constants.ROUTE().ACCOUNTS, m.h.GetAllAccounts)
+	m.r.Put(constants.ROUTE().ACCOUNTS, m.h.UpdateAccount)
+	m.r.Delete(constants.ROUTE().ACCOUNTS_ACCOUNTID, m.h.DeleteAccount)
+	m.r.Patch(constants.ROUTE().ACCOUNTS_ACCOUNTID, m.h.PatchAccount)
 
 }

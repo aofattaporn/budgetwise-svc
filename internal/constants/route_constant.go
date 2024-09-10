@@ -7,7 +7,10 @@ type route struct {
 	SALARY string
 
 	// accounts
-	ACCOUNTS string
+	ACCOUNTS           string
+	ACCOUNTS_AMOUNT    string
+	ACCOUNTS_NAME      string
+	ACCOUNTS_ACCOUNTID string
 
 	// transactions
 	TRANSACTIONS string
@@ -18,9 +21,14 @@ type route struct {
 
 func ROUTE() *route {
 	return &route{
-		HEALTHCHECK:  "/health",
-		SALARY:       "/users/salary",
-		ACCOUNTS:     "/accounts",
+		HEALTHCHECK: "/health",
+		SALARY:      "/users/salary",
+		ACCOUNTS:    "/accounts",
+
+		// accounts
+		ACCOUNTS_ACCOUNTID: "/accounts/:id",
+
+		// transactions
 		TRANSACTIONS: "/transactions",
 		PLANS:        "/plans",
 	}
