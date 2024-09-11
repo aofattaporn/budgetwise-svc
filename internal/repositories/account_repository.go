@@ -8,10 +8,11 @@ import (
 )
 
 type IAccountRepository interface {
-	FindAccounts() ([]entities.Account, error)                                                  // To find all accounts
-	AddAccount(account entities.Account) error                                                  // To add an account
-	UpdateAccount(account entities.Account) error                                               // To update an existing account
-	DeleteAccount(accountID entities.AccountId) error                                           // To delete an account by ID
+	FindAccounts() ([]entities.Account, error)    // To find all accounts
+	AddAccount(account entities.Account) error    // To add an account
+	UpdateAccount(account entities.Account) error // To update an existing account
+	DeleteAccount(accountID entities.AccountId) error
+	DeleteAllAccounts() error                                                                   // To delete an account by ID
 	UpdateNameAndAmountAccount(accountID entities.AccountId, req entities.AccountRequest) error // to update only the account name
 }
 
@@ -67,9 +68,27 @@ func (r *accountRepository) DeleteAccount(accountID entities.AccountId) error {
 	return nil
 }
 
+// DeleteAllAccounts deletes all accounts from the database using raw SQL
+func (r *accountRepository) DeleteAllAccounts() error {
+	// Use raw SQL to delete all accounts from the table
+	result := r.db.Exec("DELETE FROM accounts")
+
+	// Check for errors during execution
+	if result.Error != nil {
+		return errors.New("could not delete all accounts: " + result.Error.Error())
+	}
+
+	// Ensure rows were affected
+	if result.RowsAffected == 0 {
+		return errors.New("no accounts were deleted")
+	}
+
+	return nil
+}
+
 // UpdateAccountName updates only the account's name in the database
 func (r *accountRepository) UpdateNameAndAmountAccount(accountID entities.AccountId, req entities.AccountRequest) error {
-	err := r.db.Model(&entities.Account{}).Where("account_id = ?", accountID).Update("name", req.Name).Update("amount", req.Amount).Error
+	err := r.db.Model(&entities.Account{}).Where("account_id = ?", accountID).Update("name", req.AccountName).Update("amount", req.Balance).Update("colorIndex", req.ColorIndex).Error
 	if err != nil {
 		return errors.New("could not update account name: " + err.Error())
 	}

@@ -34,6 +34,7 @@ func (m *accountModule) Init() {
 	m.r.Post(constants.ROUTE().ACCOUNTS, m.h.CreateAccount)
 	m.r.Get(constants.ROUTE().ACCOUNTS, m.h.GetAllAccounts)
 	m.r.Put(constants.ROUTE().ACCOUNTS, m.h.UpdateAccount)
+	m.r.Delete(constants.ROUTE().ACCOUNTS, m.h.DeleteAllAccounts)
 	m.r.Delete(constants.ROUTE().ACCOUNTS_ACCOUNTID, m.h.DeleteAccount)
 	m.r.Patch(constants.ROUTE().ACCOUNTS_ACCOUNTID, m.h.PatchAccount)
 

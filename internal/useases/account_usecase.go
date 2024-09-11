@@ -13,6 +13,7 @@ type IAccountUsecase interface {
 	CreateAccount(req entities.AccountRequest)
 	UpdateAccount(req entities.Account)
 	DeleteAccount(accountId entities.AccountId) error
+	DeleteAllAccounts() error
 	PatchAccount(accountId entities.AccountId, req entities.AccountRequest)
 }
 
@@ -39,10 +40,11 @@ func (u *accountUsecase) GetAllAccounts() entities.AccountsList {
 func (u *accountUsecase) CreateAccount(req entities.AccountRequest) {
 
 	err := u.r.AddAccount(entities.Account{
-		Name:           req.Name,
-		Amount:         req.Amount,
+		AccountName:    req.AccountName,
+		Balance:        req.Balance,
 		CreateDate:     time.Now(),
 		UpdatePlanDate: time.Now(),
+		ColorIndex:     req.ColorIndex,
 	})
 	if err != nil {
 		u.l.Errorf("create accounts error %v", err)
@@ -52,10 +54,11 @@ func (u *accountUsecase) CreateAccount(req entities.AccountRequest) {
 func (u *accountUsecase) UpdateAccount(req entities.Account) {
 	err := u.r.UpdateAccount(entities.Account{
 		AccountID:      req.AccountID,
-		Name:           req.Name,
-		Amount:         req.Amount,
+		AccountName:    req.AccountName,
+		Balance:        req.Balance,
 		CreateDate:     req.CreateDate,
 		UpdatePlanDate: time.Now(),
+		ColorIndex:     req.ColorIndex,
 	})
 	if err != nil {
 		u.l.Errorf("update accounts error %v", err)
@@ -64,6 +67,14 @@ func (u *accountUsecase) UpdateAccount(req entities.Account) {
 
 func (u *accountUsecase) DeleteAccount(accountId entities.AccountId) error {
 	err := u.r.DeleteAccount(accountId)
+	if err != nil {
+		u.l.Errorf("delete accounts error %v", err)
+	}
+	return nil
+}
+
+func (u *accountUsecase) DeleteAllAccounts() error {
+	err := u.r.DeleteAllAccounts()
 	if err != nil {
 		u.l.Errorf("delete accounts error %v", err)
 	}

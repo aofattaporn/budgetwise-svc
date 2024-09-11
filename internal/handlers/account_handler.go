@@ -14,6 +14,7 @@ type IAccountHandler interface {
 	GetAllAccounts(c *fiber.Ctx) error
 	CreateAccount(c *fiber.Ctx) error
 	UpdateAccount(c *fiber.Ctx) error
+	DeleteAllAccounts(c *fiber.Ctx) error
 	DeleteAccount(c *fiber.Ctx) error
 	PatchAccount(c *fiber.Ctx) error
 }
@@ -76,6 +77,15 @@ func (h *accountHandler) DeleteAccount(c *fiber.Ctx) error {
 	}
 	h.u.DeleteAccount(accountId)
 
+	return c.JSON(&entities.Response{
+		Code:        1000,
+		Description: constants.STATUS().SUCCESS,
+		Data:        nil,
+	})
+}
+
+func (h *accountHandler) DeleteAllAccounts(c *fiber.Ctx) error {
+	h.u.DeleteAllAccounts()
 	return c.JSON(&entities.Response{
 		Code:        1000,
 		Description: constants.STATUS().SUCCESS,
