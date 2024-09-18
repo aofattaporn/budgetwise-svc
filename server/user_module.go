@@ -3,6 +3,8 @@ package server
 import (
 	"github.com/goproject/internal/constants"
 	"github.com/goproject/internal/handlers"
+	"github.com/goproject/internal/repositories"
+	"github.com/goproject/internal/useases"
 )
 
 type IUserModule interface {
@@ -16,7 +18,9 @@ type userModuleModule struct {
 
 func (m *moduleFactory) UserModule() IUserModule {
 
-	handlers := handlers.UserHandler()
+	repository := repositories.UserRepository(m.s.db.GetDb())
+	useases := useases.UserUsecase(m.s.logger, repository)
+	handlers := handlers.UserHandler(useases, m.s.logger)
 
 	return &userModuleModule{
 		moduleFactory: m,

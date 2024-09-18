@@ -45,6 +45,7 @@ func (u *accountUsecase) CreateAccount(req entities.AccountRequest) {
 		CreateDate:     time.Now(),
 		UpdatePlanDate: time.Now(),
 		ColorIndex:     req.ColorIndex,
+		UserID:         1,
 	})
 	if err != nil {
 		u.l.Errorf("create accounts error %v", err)
@@ -59,6 +60,7 @@ func (u *accountUsecase) UpdateAccount(req entities.Account) {
 		CreateDate:     req.CreateDate,
 		UpdatePlanDate: time.Now(),
 		ColorIndex:     req.ColorIndex,
+		UserID:         1,
 	})
 	if err != nil {
 		u.l.Errorf("update accounts error %v", err)

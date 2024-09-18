@@ -93,7 +93,7 @@ func (h *middlewaresHandler) Logger() fiber.Handler {
 			// 	LatencyMS: fmt.Sprintf("%d", endTime.Sub(startTime).Milliseconds()),
 			// })
 
-			h.logger.Info(string(c.Context().RequestURI()))
+			h.logger.Info(string(c.Context().Method()) + ":" + string(c.Context().RequestURI()))
 		}()
 
 		return c.Next()
