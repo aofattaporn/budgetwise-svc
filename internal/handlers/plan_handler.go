@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/goproject/internal/entities"
 	"github.com/goproject/internal/useases"
@@ -30,7 +32,15 @@ func (h *planHandler) CreatePlan(c *fiber.Ctx) error {
 	if err := c.BodyParser(req); err != nil {
 		return err
 	}
-	h.u.CreatePlan(*req)
+
+	err := h.u.CreatePlan(*req)
+	if err != nil {
+		return c.JSON(&entities.ErrorResponse{
+			Code:         1899,
+			Timestamp:    time.Now(),
+			ErrorMessage: err.Error(),
+		})
+	}
 
 	return c.JSON(&entities.Response{
 		Code: 1000,
@@ -41,6 +51,6 @@ func (h *planHandler) CreatePlan(c *fiber.Ctx) error {
 func (h *planHandler) GetAllPlans(c *fiber.Ctx) error {
 	return c.JSON(&entities.Response{
 		Code: 1000,
-		Data: nil,
+		Data: h.u.GetAllPlans(),
 	})
 }

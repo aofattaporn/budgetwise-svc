@@ -2,13 +2,14 @@ package repositories
 
 import (
 	"errors"
+	"time"
 
 	"github.com/goproject/internal/entities"
 	"gorm.io/gorm"
 )
 
 type IPlanRepository interface {
-	FindAllPlans() ([]entities.Plan, error)
+	FindAllPlans() ([]entities.PlanDetails, error)
 	AddPlan(account entities.Plan) error
 }
 
@@ -23,16 +24,51 @@ func PlanRepository(database *gorm.DB) IPlanRepository {
 	}
 }
 
-// FindAccounts retrieves all plans from the database
-func (r *planRepository) FindAllPlans() ([]entities.Plan, error) {
-	return []entities.Plan{}, nil
+type Account struct {
+	AccountID      int       `gorm:"primaryKey;column:account_id" json:"accountId"`
+	AccountName    string    `gorm:"column:name" json:"accountName"`
+	Balance        float64   `gorm:"column:amount" json:"balance"`
+	CreateDate     time.Time `gorm:"column:create_date" json:"createDate"`
+	UpdatePlanDate time.Time `gorm:"column:update_plan_date" json:"updatePlanDate"`
+	ColorIndex     int       `gorm:"column:color_index" json:"colorIndex"`
+	UserID         int       `gorm:"column:user_id" json:"userId"`
 }
 
-// AddAccount adds a new plan to the database
-func (r *planRepository) AddPlan(account entities.Plan) error {
-	err := r.db.Create(&account).Error
+// FindAllPlans retrieves all plans with their associated accounts from the database
+func (r *planRepository) FindAllPlans() ([]entities.PlanDetails, error) {
+	var plans []entities.PlanDetails
+	err := r.db.Model(&entities.Plan{}).
+		Select(
+			`plans.plan_id, 
+			plans.name AS name, 
+			plans.amount AS amount, 
+			plans.icon_index AS icon_index,
+			plans.create_date AS create_date, 
+			plans.update_plan_date AS update_plan_date, 
+			accounts.account_id, 
+			accounts.name AS accountName
+			`).
+		Joins("LEFT JOIN accounts ON plans.account_id = accounts.account_id").
+		Scan(&plans).Error
+
 	if err != nil {
-		return errors.New("could not create account: " + err.Error())
+		return nil, errors.New("could not find plans: " + err.Error())
+	}
+	return plans, nil
+}
+
+// addAccount adds a new plan to the database
+func (r *planRepository) AddPlan(plan entities.Plan) error {
+	if err := r.db.First(&entities.Account{}, plan.AccountID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("referenced record not found")
+		}
+		return errors.New("could not check account: " + err.Error())
+	}
+
+	err := r.db.Create(&plan).Error
+	if err != nil {
+		return errors.New("could not create plan: " + err.Error())
 	}
 
 	return nil
