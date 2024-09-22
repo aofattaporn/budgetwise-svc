@@ -16,7 +16,8 @@ type route struct {
 	TRANSACTIONS string
 
 	// plans
-	PLANS string
+	PLANS    string
+	PLANS_ID string
 }
 
 func ROUTE() *route {
@@ -31,5 +32,6 @@ func ROUTE() *route {
 		// transactions
 		TRANSACTIONS: "/transactions",
 		PLANS:        "/plans",
+		PLANS_ID:     "/plans/:id",
 	}
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,6 +13,7 @@ import (
 type IPlanHandler interface {
 	GetAllPlans(c *fiber.Ctx) error
 	CreatePlan(c *fiber.Ctx) error
+	DeletePlans(c *fiber.Ctx) error
 }
 
 type planHandler struct {
@@ -33,7 +35,7 @@ func (h *planHandler) CreatePlan(c *fiber.Ctx) error {
 		return err
 	}
 
-	err := h.u.CreatePlan(*req)
+	plans, err := h.u.CreatePlan(*req)
 	if err != nil {
 		return c.JSON(&entities.ErrorResponse{
 			Code:         1899,
@@ -44,7 +46,7 @@ func (h *planHandler) CreatePlan(c *fiber.Ctx) error {
 
 	return c.JSON(&entities.Response{
 		Code: 1000,
-		Data: nil,
+		Data: plans,
 	})
 }
 
@@ -52,5 +54,27 @@ func (h *planHandler) GetAllPlans(c *fiber.Ctx) error {
 	return c.JSON(&entities.Response{
 		Code: 1000,
 		Data: h.u.GetAllPlans(),
+	})
+}
+
+func (h *planHandler) DeletePlans(c *fiber.Ctx) error {
+
+	planId, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return &fiber.Error{Code: 400, Message: "convert id error"}
+	}
+
+	plans, err := h.u.DeletePlan(planId)
+	if err != nil {
+		return c.JSON(&entities.ErrorResponse{
+			Code:         1899,
+			Timestamp:    time.Now(),
+			ErrorMessage: err.Error(),
+		})
+	}
+
+	return c.JSON(&entities.Response{
+		Code: 1000,
+		Data: plans,
 	})
 }

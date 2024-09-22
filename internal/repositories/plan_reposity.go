@@ -11,6 +11,7 @@ import (
 type IPlanRepository interface {
 	FindAllPlans() ([]entities.PlanDetails, error)
 	AddPlan(account entities.Plan) error
+	DeletePlanById(planId int) error
 }
 
 type planRepository struct {
@@ -71,5 +72,14 @@ func (r *planRepository) AddPlan(plan entities.Plan) error {
 		return errors.New("could not create plan: " + err.Error())
 	}
 
+	return nil
+}
+
+// DeleteAccount deletes an account from the database by its ID
+func (r *planRepository) DeletePlanById(planId int) error {
+	err := r.db.Delete(&entities.Plan{}, planId).Error
+	if err != nil {
+		return errors.New("could not delete plan: " + err.Error())
+	}
 	return nil
 }

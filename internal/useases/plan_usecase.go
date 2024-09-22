@@ -10,7 +10,8 @@ import (
 
 type IPlanUsecase interface {
 	GetAllPlans() entities.PlanList
-	CreatePlan(req entities.PlanningRequest) error
+	CreatePlan(req entities.PlanningRequest) (*entities.PlanList, error)
+	DeletePlan(deleteId int) (*entities.PlanList, error)
 }
 
 func PlanUsecase(logger log.ILogger, repository repositories.IPlanRepository) IPlanUsecase {
@@ -33,7 +34,7 @@ func (u *planUsecase) GetAllPlans() entities.PlanList {
 	return plans
 }
 
-func (u *planUsecase) CreatePlan(req entities.PlanningRequest) error {
+func (u *planUsecase) CreatePlan(req entities.PlanningRequest) (*entities.PlanList, error) {
 	err := u.r.AddPlan(entities.Plan{
 		Name:           req.Name,
 		Amount:         req.Amount,
@@ -44,9 +45,31 @@ func (u *planUsecase) CreatePlan(req entities.PlanningRequest) error {
 		AccountID:      req.AccountID,
 	})
 	if err != nil {
-		u.l.Errorf("create accounts error %v", err)
-		return err
+		u.l.Errorf("create plan error %v", err)
+		return nil, err
 	}
 
-	return nil
+	plans, err := u.r.FindAllPlans()
+	if err != nil {
+		u.l.Errorf("find plan error: %v", err)
+		return nil, err
+	}
+
+	return &plans, nil
+}
+
+func (u *planUsecase) DeletePlan(deleteId int) (*entities.PlanList, error) {
+	err := u.r.DeletePlanById(deleteId)
+	if err != nil {
+		u.l.Errorf("delete accounts error %v", err)
+		return nil, err
+	}
+
+	plans, err := u.r.FindAllPlans()
+	if err != nil {
+		u.l.Errorf("find plan error: %v", err)
+		return nil, err
+	}
+
+	return &plans, nil
 }
