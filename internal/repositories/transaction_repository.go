@@ -24,13 +24,26 @@ func TransactionRepository(database *gorm.DB) ITransactionRepository {
 	}
 }
 
-// FindAllPlans retrieves all plans with their associated accounts from the database
 func (r *transactionRepository) FindListTransaction() ([]entities.TransactionRes, error) {
 	var transactions []entities.TransactionRes
-	today := time.Now().Format("YYYY-MM-DD")
+	today := time.Now()
 
-	// Filter transactions based on today's date
-	err := r.db.Where("DATE(create_date) = ?", today).Find(&transactions).Error
+	// Filter transactions based on today's date and join plans and accounts
+	err := r.db.Model(entities.Transaction{}).
+		Where("DATE(transactions.create_date) = ?", today.Format("2006-01-02")).
+		Select(
+			"transactions.transaction_id AS transaction_id, " +
+				"transactions.name AS name, " +
+				"transactions.amount AS amount, " +
+				"transactions.operation AS operation, " +
+				"transactions.create_date AS create_date, " +
+				"transactions.update_date AS update_date, " +
+				"plans.name AS plan_name, " + // Plan name
+				"accounts.name AS account_name"). // Account name
+		Joins("LEFT JOIN plans ON transactions.plan_id = plans.plan_id").
+		Joins("LEFT JOIN accounts ON plans.account_id = accounts.account_id").
+		Scan(&transactions).Error
+
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +51,8 @@ func (r *transactionRepository) FindListTransaction() ([]entities.TransactionRes
 }
 
 // Creat Transaction
-func (r *transactionRepository) AddTransaction(account entities.Transaction) error {
-	err := r.db.Create(&account).Error
+func (r *transactionRepository) AddTransaction(transaction entities.Transaction) error {
+	err := r.db.Create(&transaction).Error
 	if err != nil {
 		return errors.New("could not create transaction: " + err.Error())
 	}

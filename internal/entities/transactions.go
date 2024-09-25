@@ -30,8 +30,7 @@ type TransactionRes struct {
 	Amount        float64   `gorm:"column:amount" json:"amount"`
 	Operation     string    `gorm:"column:operation" json:"operation"`
 	CreateDate    time.Time `gorm:"column:create_date" json:"createDate"`
-	UpdateDate    int       `gorm:"column:update_date" json:"updateDate"`
-	UserID        int       `gorm:"column:user_id" json:"userId"`
+	UpdateDate    time.Time `gorm:"column:update_date" json:"updateDate"`
 	PlanName      string    `gorm:"column:plan_name" json:"planName"`
 	AccountName   string    `gorm:"column:account_name" json:"accountName"`
 }
