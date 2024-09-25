@@ -3,6 +3,8 @@ package server
 import (
 	"github.com/goproject/internal/constants"
 	"github.com/goproject/internal/handlers"
+	"github.com/goproject/internal/repositories"
+	"github.com/goproject/internal/useases"
 )
 
 type ITransactionModule interface {
@@ -15,7 +17,10 @@ type transactionModule struct {
 }
 
 func (m *moduleFactory) TransactionModule() ITransactionModule {
-	handler := handlers.TransactionHandler()
+
+	repository := repositories.TransactionRepository(m.s.db.GetDb())
+	useases := useases.TransactionUsecase(m.s.logger, repository)
+	handler := handlers.TransactionHandler(useases, m.s.logger)
 
 	return &transactionModule{
 		moduleFactory: m,
@@ -27,4 +32,6 @@ func (m *transactionModule) Init() {
 
 	// handler
 	m.r.Get(constants.ROUTE().TRANSACTIONS, m.h.GetAllTransactions)
+	m.r.Post(constants.ROUTE().TRANSACTIONS, m.h.CreateTransactions)
+
 }

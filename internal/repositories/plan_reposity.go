@@ -37,7 +37,6 @@ type Account struct {
 }
 
 // FindAllPlans retrieves all plans with their associated accounts from the database
-// FindAllPlans retrieves all plans with their associated accounts from the database
 func (r *planRepository) FindAllPlans() ([]entities.PlanDetails, error) {
 	var plans []entities.PlanDetails
 	err := r.db.Model(&entities.Plan{}).
