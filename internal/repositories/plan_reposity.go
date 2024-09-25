@@ -36,19 +36,19 @@ type Account struct {
 }
 
 // FindAllPlans retrieves all plans with their associated accounts from the database
+// FindAllPlans retrieves all plans with their associated accounts from the database
 func (r *planRepository) FindAllPlans() ([]entities.PlanDetails, error) {
 	var plans []entities.PlanDetails
 	err := r.db.Model(&entities.Plan{}).
 		Select(
-			`plans.plan_id, 
-			plans.name AS name, 
-			plans.amount AS amount, 
-			plans.icon_index AS icon_index,
-			plans.create_date AS create_date, 
-			plans.update_plan_date AS update_plan_date, 
-			accounts.account_id, 
-			accounts.name AS accountName
-			`).
+			"plans.plan_id AS plan_id, " +
+				"plans.name AS name, " +
+				"plans.plan_usage AS plan_usage, " +
+				"plans.amount AS amount, " +
+				"plans.create_date AS create_date, " +
+				"plans.icon_index AS icon_index, " +
+				"plans.update_plan_date AS update_plan_date, " +
+				"accounts.name AS accountName").
 		Joins("LEFT JOIN accounts ON plans.account_id = accounts.account_id").
 		Scan(&plans).Error
 

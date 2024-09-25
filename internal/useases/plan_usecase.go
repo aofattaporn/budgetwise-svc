@@ -37,6 +37,7 @@ func (u *planUsecase) GetAllPlans() entities.PlanList {
 func (u *planUsecase) CreatePlan(req entities.PlanningRequest) (*entities.PlanList, error) {
 	err := u.r.AddPlan(entities.Plan{
 		Name:           req.Name,
+		Usage:          0,
 		Amount:         req.Amount,
 		IconIndex:      req.IconIndex,
 		CreateDate:     time.Now(),

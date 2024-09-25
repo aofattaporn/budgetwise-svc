@@ -13,11 +13,13 @@ type Plan struct {
 	UpdatePlanDate time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
 	UserID         int       `gorm:"not null"`
 	AccountID      int       `gorm:"index"`
+	Usage          float64   `gorm:"column:plan_usage" json:"usage"`
 }
 
 type PlanDetails struct {
 	PlanID         int       `gorm:"primaryKey;autoIncrement" json:"planId"`
 	Name           string    `gorm:"column:name" json:"name"`
+	Usage          float64   `gorm:"column:plan_usage" json:"usage"`
 	Amount         float64   `gorm:"column:amount" json:"amount"`
 	CreateDate     time.Time `gorm:"column:create_date" json:"createDate"`
 	UpdatePlanDate time.Time `gorm:"column:update_plan_date" json:"updateDate"`

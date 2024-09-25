@@ -22,7 +22,7 @@ func UserRepository(database *gorm.DB) IUserRepository {
 
 func (r *userRepository) GetSalaryAndDateReset(userID int) (*entities.SalaryAndResetDate, error) {
 	var user entities.SalaryAndResetDate
-	err := r.db.Table("users").Select("salary", "reset_date_planning").Where("user_id = ?", userID).First(&user).Error
+	err := r.db.Table("users").Select("salary", "reset_date_planning", "current_usage_monthly").Where("user_id = ?", userID).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
