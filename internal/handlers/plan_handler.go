@@ -13,6 +13,7 @@ import (
 type IPlanHandler interface {
 	GetAllPlans(c *fiber.Ctx) error
 	CreatePlan(c *fiber.Ctx) error
+	UpdatePlan(c *fiber.Ctx) error
 	DeletePlans(c *fiber.Ctx) error
 }
 
@@ -36,6 +37,32 @@ func (h *planHandler) CreatePlan(c *fiber.Ctx) error {
 	}
 
 	plans, err := h.u.CreatePlan(*req)
+	if err != nil {
+		return c.JSON(&entities.ErrorResponse{
+			Code:         1899,
+			Timestamp:    time.Now(),
+			ErrorMessage: err.Error(),
+		})
+	}
+
+	return c.JSON(&entities.Response{
+		Code: 1000,
+		Data: plans,
+	})
+}
+
+func (h *planHandler) UpdatePlan(c *fiber.Ctx) error {
+
+	planId, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return &fiber.Error{Code: 400, Message: "convert id error"}
+	}
+	req := new(entities.PlanningRequest)
+	if err := c.BodyParser(req); err != nil {
+		return err
+	}
+
+	plans, err := h.u.UpdatePlan(planId, *req)
 	if err != nil {
 		return c.JSON(&entities.ErrorResponse{
 			Code:         1899,

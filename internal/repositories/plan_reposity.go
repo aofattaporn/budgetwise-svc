@@ -11,6 +11,7 @@ import (
 type IPlanRepository interface {
 	FindAllPlans() ([]entities.PlanDetails, error)
 	AddPlan(account entities.Plan) error
+	UpdatePlan(account entities.Plan) error
 	DeletePlanById(planId int) error
 }
 
@@ -70,6 +71,23 @@ func (r *planRepository) AddPlan(plan entities.Plan) error {
 	err := r.db.Create(&plan).Error
 	if err != nil {
 		return errors.New("could not create plan: " + err.Error())
+	}
+
+	return nil
+}
+
+// addAccount adds a new plan to the database
+func (r *planRepository) UpdatePlan(plan entities.Plan) error {
+	if err := r.db.First(&entities.Account{}, plan.AccountID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("referenced record not found")
+		}
+		return errors.New("could not check account: " + err.Error())
+	}
+
+	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", plan.PlanID).Update("name", plan.Name).Update("amount", plan.Amount).Update("icon_index", plan.IconIndex).Update("account_id", plan.AccountID).Update("update_plan_date", plan.UpdatePlanDate).Error
+	if err != nil {
+		return errors.New("could not update plan: " + err.Error())
 	}
 
 	return nil
