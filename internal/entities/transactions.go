@@ -31,6 +31,7 @@ type TransactionRes struct {
 	Operation     string    `gorm:"column:operation" json:"operation"`
 	CreateDate    time.Time `gorm:"column:create_date" json:"createDate"`
 	UpdateDate    time.Time `gorm:"column:update_date" json:"updateDate"`
+	IconIndex     int       `gorm:"column:icon_index" json:"iconIndex"`
 	PlanName      string    `gorm:"column:plan_name" json:"planName"`
 	AccountName   string    `gorm:"column:account_name" json:"accountName"`
 }
