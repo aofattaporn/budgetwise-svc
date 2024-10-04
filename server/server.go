@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/gofiber/contrib/swagger"
 	"github.com/gofiber/fiber/v2"
 	"github.com/goproject/configs"
 	"github.com/goproject/internal/middlewares"
@@ -59,6 +60,8 @@ func (s *fiberServer) Start() {
 	mid := InitMiddlewares(s)
 	s.app.Use(mid.Cors())
 	s.app.Use(mid.Logger())
+	// TODO : swagger init
+	s.app.Use(swagger.New())
 
 	router := s.app.Group(s.cfg.App().ContextPath())
 	modules := InitModule(router, s, mid)

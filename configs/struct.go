@@ -4,6 +4,7 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
 	Log      LogConfig      `mapstructure:"log"`
+	Swagger  SwaggerConfig  `mapstructure:"swagger"`
 }
 
 type AzureConfig struct {
@@ -55,4 +56,13 @@ type ConsoleConfig struct {
 	Level  string `mapstructure:"level" validate:"required"`
 	IsJson bool   `mapstructure:"isJson"`
 	Color  bool   `mapstructure:"color"`
+}
+
+type SwaggerConfig struct {
+	next     *bool  `mapstructure:"next"`
+	basePath string `mapstructure:"basePath"`
+	filePath string `mapstructure:"filePath"`
+	path     string `mapstructure:"path"`
+	title    string `mapstructure:"title"`
+	cacheAge int    `mapstructure:"cacheAge"`
 }

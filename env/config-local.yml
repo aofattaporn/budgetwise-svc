@@ -16,6 +16,14 @@ database:
   retryTimeInSec: 30
   countRetry: 5
 
+swagger:
+  next: null
+  basePath: "/"
+  filePath: "./swagger.json"
+  path: "docs"
+  title: "Fiber API documentation"
+  cacheAge: 3600
+
 server:
   port: 8080
   contextPath: /api

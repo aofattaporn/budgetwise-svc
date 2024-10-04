@@ -11,12 +11,14 @@ type IConfig interface {
 	App() IAppConfig
 	Db() IDbConfig
 	Log() ILogConfig
+	Swagger() ISwagger
 }
 
 type config struct {
-	app *app
-	db  *db
-	log *log
+	app     *app
+	db      *db
+	log     *log
+	swagger *swagger
 }
 
 func LoadConfig(path string) (IConfig, error) {
@@ -69,6 +71,14 @@ func LoadConfig(path string) (IConfig, error) {
 				isJson: viperConfig.Log.Console.IsJson,
 				color:  viperConfig.Log.Console.Color,
 			},
+		},
+		swagger: &swagger{
+			next:     viperConfig.Swagger.next,
+			basePath: viperConfig.Swagger.basePath,
+			filePath: viperConfig.Swagger.filePath,
+			path:     viperConfig.Swagger.path,
+			title:    viperConfig.Swagger.title,
+			cacheAge: viperConfig.Swagger.cacheAge,
 		},
 	}
 
