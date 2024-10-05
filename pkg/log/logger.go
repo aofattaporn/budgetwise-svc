@@ -24,6 +24,9 @@ type ILogger interface {
 	Fatalf(template string, args ...interface{})
 	WithCtx(ctx context.Context) ILogger
 	WithField(field Field) *Logger
+	ServiceInfo(msg string)
+	ServiceInfof(template string, args ...interface{})
+	RepoInfof(template string, args ...interface{})
 }
 
 type Logger struct {

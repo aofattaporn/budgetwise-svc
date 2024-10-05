@@ -18,6 +18,18 @@ func (l *Logger) Infof(template string, args ...interface{}) {
 	l.logger.Infof(template, args...)
 }
 
+func (l *Logger) ServiceInfo(msg string) {
+	l.logger.Desugar().Info(msg)
+}
+
+func (l *Logger) ServiceInfof(template string, args ...interface{}) {
+	l.logger.Infof("usecase-action: "+template, args...)
+}
+
+func (l *Logger) RepoInfof(template string, args ...interface{}) {
+	l.logger.Infof("reposity: "+template, args...)
+}
+
 func (l *Logger) Warn(msg string) {
 	l.logger.Desugar().Warn(msg)
 }

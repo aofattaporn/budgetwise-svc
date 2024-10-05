@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 	"runtime/debug"
 	"strings"
@@ -68,32 +69,8 @@ func (h *middlewaresHandler) Logger() fiber.Handler {
 		})
 
 		defer func() {
-
-			// endTime := time.Now()
-			// resHeaders := make(entities.LogHeaders)
-			// c.Response().Header.VisitAll(func(key, value []byte) {
-			// 	resHeaders[string(key)] = string(value)
-			// })
-			// convert json
-			// logJson, _ := json.Marshal(&entities.LoggerRequestAndResponse{
-			// 	Method: c.Method(),
-			// 	Path:   c.Path(),
-			// 	Req: entities.LogReq{
-			// 		Headers: reqHeaders,
-			// 		Params:  c.Queries(),
-			// 		Body:    string(c.Body()),
-			// 		Time:    startTime.Format(time.RFC3339Nano),
-			// 	},
-			// 	Res: entities.LogRes{
-			// 		Status:  c.Response().StatusCode(),
-			// 		Headers: resHeaders,
-			// 		Body:    string(c.Response().Body()),
-			// 		Time:    endTime.Format(time.RFC3339Nano),
-			// 	},
-			// 	LatencyMS: fmt.Sprintf("%d", endTime.Sub(startTime).Milliseconds()),
-			// })
-
 			h.logger.Info(string(c.Context().Method()) + ":" + string(c.Context().RequestURI()))
+			fmt.Println("=========================================================================")
 		}()
 
 		return c.Next()

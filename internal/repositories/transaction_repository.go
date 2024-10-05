@@ -2,16 +2,18 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
-	"time"
+	"strings"
 
+	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities"
 	"gorm.io/gorm"
 )
 
 type ITransactionRepository interface {
-	FindListTransaction() (entities.TransactionListRes, error)
+	FindListTransaction(date string) (entities.TransactionListRes, error)
 	AddTransaction(account entities.Transaction) error
+	DeleteTransactionById(id int) error
+	TruncateTransaction() error
 }
 
 type transactionRepository struct {
@@ -25,14 +27,16 @@ func TransactionRepository(database *gorm.DB) ITransactionRepository {
 	}
 }
 
-func (r *transactionRepository) FindListTransaction() ([]entities.TransactionRes, error) {
+func (r *transactionRepository) FindListTransaction(date string) ([]entities.TransactionRes, error) {
 
 	var transactions []entities.TransactionRes
-	today := time.Now()
 
-	// Filter transactions based on today's date and join plans and accounts
+	// Trim any potential whitespace from the date parameter
+	trimmedDate := strings.TrimSpace(date)
+
+	// Query transactions based on the passed date, joining plans and accounts
 	err := r.db.Model(entities.Transaction{}).
-		Where("DATE(transactions.create_date) = ?", today.Format("2006-01-02")). // Format date without time
+		Where("DATE(transactions.create_date) = ?", trimmedDate). // Dynamically use the date parameter
 		Select(
 			"transactions.transaction_id AS transaction_id, " +
 				"transactions.name AS name, " +
@@ -44,25 +48,46 @@ func (r *transactionRepository) FindListTransaction() ([]entities.TransactionRes
 				"plans.name AS plan_name, " + // Plan name
 				"accounts.name AS account_name"). // Account name
 		Joins("LEFT JOIN plans ON transactions.plan_id = plans.plan_id").
-		Joins("LEFT JOIN accounts ON plans.account_id = accounts.account_id").
+		Joins("LEFT JOIN accounts ON transactions.account_id = accounts.account_id"). // Corrected join to use `transactions.account_id`
 		Scan(&transactions).Error
 
 	if err != nil {
-		return nil, err
+		return nil, errors.New("[database errors]: " + err.Error())
 	}
 
 	return transactions, nil
 }
 
-// Creat Transaction
 func (r *transactionRepository) AddTransaction(transaction entities.Transaction) error {
-
-	fmt.Println(transaction)
-	fmt.Println("====================")
-
 	err := r.db.Create(&transaction).Error
+
 	if err != nil {
-		return errors.New("could not create transaction: " + err.Error())
+		if strings.Contains(err.Error(), "foreign key constraint fails") {
+			return customerrors.FOREIGN_KEY_VIOLATION_ERROR("Account ID or Plan ID does not exist")
+		}
+		return errors.New("[database errors]: " + err.Error())
 	}
+
+	return nil
+}
+
+func (r *transactionRepository) DeleteTransactionById(id int) error {
+	err := r.db.Delete(&entities.Transaction{}, id).Error
+	if err != nil {
+		return errors.New("[database errors]: " + err.Error())
+	}
+	return nil
+}
+
+func (r *transactionRepository) TruncateTransaction() error {
+	result := r.db.Exec("DELETE FROM transactions")
+	if result.Error != nil {
+		return errors.New("[database errors]: " + result.Error.Error())
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("[database errors]: no accounts were deleted")
+	}
+
 	return nil
 }

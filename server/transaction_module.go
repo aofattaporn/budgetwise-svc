@@ -33,5 +33,7 @@ func (m *transactionModule) Init() {
 	// handler
 	m.r.Get(constants.ROUTE().TRANSACTIONS, m.h.GetAllTransactions)
 	m.r.Post(constants.ROUTE().TRANSACTIONS, m.h.CreateTransactions)
+	m.r.Delete(constants.ROUTE().TRANSACTIONS, m.h.DeleteTransactions)
+	m.r.Delete(constants.ROUTE().TRANSACTIONS_ID, m.h.DeleteTransactions)
 
 }

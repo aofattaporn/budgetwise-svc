@@ -13,7 +13,8 @@ type route struct {
 	ACCOUNTS_ACCOUNTID string
 
 	// transactions
-	TRANSACTIONS string
+	TRANSACTIONS    string
+	TRANSACTIONS_ID string
 
 	// plans
 	PLANS    string
@@ -30,8 +31,11 @@ func ROUTE() *route {
 		ACCOUNTS_ACCOUNTID: "/accounts/:id",
 
 		// transactions
-		TRANSACTIONS: "/transactions",
-		PLANS:        "/plans",
-		PLANS_ID:     "/plans/:id",
+		TRANSACTIONS:    "/transactions",
+		TRANSACTIONS_ID: "/transactions/:id",
+
+		// plans
+		PLANS:    "/plans",
+		PLANS_ID: "/plans/:id",
 	}
 }
