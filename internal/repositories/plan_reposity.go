@@ -12,6 +12,7 @@ type IPlanRepository interface {
 	FindAllPlans() ([]entities.PlanDetails, error)
 	AddPlan(account entities.Plan) error
 	UpdatePlan(account entities.Plan) error
+	UpdateAmountPlanById(planId int, amount float64) error
 	DeletePlanById(planId int) error
 }
 
@@ -85,6 +86,16 @@ func (r *planRepository) UpdatePlan(plan entities.Plan) error {
 	}
 
 	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", plan.PlanID).Update("name", plan.Name).Update("amount", plan.Amount).Update("icon_index", plan.IconIndex).Update("account_id", plan.AccountID).Update("update_plan_date", plan.UpdatePlanDate).Error
+	if err != nil {
+		return errors.New("could not update plan: " + err.Error())
+	}
+
+	return nil
+}
+
+func (r *planRepository) UpdateAmountPlanById(planId int, ammount float64) error {
+
+	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", planId).Update("amount", ammount).Update("update_plan_date", time.Now()).Error
 	if err != nil {
 		return errors.New("could not update plan: " + err.Error())
 	}

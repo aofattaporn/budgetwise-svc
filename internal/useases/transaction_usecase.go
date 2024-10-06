@@ -24,8 +24,11 @@ func TransactionUsecase(logger log.ILogger, repository repositories.ITransaction
 }
 
 type transactionsUsecase struct {
-	l log.ILogger
-	r repositories.ITransactionRepository
+	l           log.ILogger
+	r           repositories.ITransactionRepository
+	planRepo    repositories.IPlanRepository
+	userRepo    repositories.IUserRepository
+	accountRepo repositories.IAccountRepository
 }
 
 func (u *transactionsUsecase) GetTransaction(date string) (entities.TransactionListRes, error) {
@@ -53,6 +56,11 @@ func (u *transactionsUsecase) CreateTransactions(req entities.TransactionReq) (e
 		PlanId:     req.PlanId,
 		AccountId:  req.AccountId,
 	})
+
+	u.l.ServiceInfof("update plan amount transaction name: (%s)", req.Name)
+	u.planRepo.UpdateAmountPlanById(req.PlanId, req.Amount-req.Amount)
+
+	u.l.ServiceInfof("update salary amount transaction name: (%s)", req.Name)
 
 	if err != nil {
 		u.l.Errorf("create transaction error %v", err)
