@@ -9,6 +9,7 @@ import (
 )
 
 type IPlanRepository interface {
+	GetPlanById(planId int) (entities.Plan, error)
 	FindAllPlans() ([]entities.PlanDetails, error)
 	AddPlan(account entities.Plan) error
 	UpdatePlan(account entities.Plan) error
@@ -35,6 +36,19 @@ type Account struct {
 	UpdatePlanDate time.Time `gorm:"column:update_plan_date" json:"updatePlanDate"`
 	ColorIndex     int       `gorm:"column:color_index" json:"colorIndex"`
 	UserID         int       `gorm:"column:user_id" json:"userId"`
+}
+
+// GetAccountsById retrieves an account by ID from the database
+func (r *planRepository) GetPlanById(planId int) (entities.Plan, error) {
+	var plan entities.Plan
+	err := r.db.First(&plan, planId).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return entities.Plan{}, errors.New("account with ID %d not found")
+		}
+		return entities.Plan{}, errors.New("error retrieving account by")
+	}
+	return plan, nil
 }
 
 // FindAllPlans retrieves all plans with their associated accounts from the database

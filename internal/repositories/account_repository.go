@@ -2,15 +2,18 @@ package repositories
 
 import (
 	"errors"
+	"time"
 
 	"github.com/goproject/internal/entities"
 	"gorm.io/gorm"
 )
 
 type IAccountRepository interface {
+	GetAccountsById(accountId int) (entities.Account, error)
 	FindAccounts() ([]entities.Account, error)    // To find all accounts
 	AddAccount(account entities.Account) error    // To add an account
 	UpdateAccount(account entities.Account) error // To update an existing account
+	UpdateAmountAccountById(accountId int, ammount float64) error
 	DeleteAccount(accountID entities.AccountId) error
 	DeleteAllAccounts() error                                                                   // To delete an account by ID
 	UpdateNameAndAmountAccount(accountID entities.AccountId, req entities.AccountRequest) error // to update only the account name
@@ -25,6 +28,19 @@ func AccountRepository(database *gorm.DB) IAccountRepository {
 	return &accountRepository{
 		db: database,
 	}
+}
+
+// GetAccountsById retrieves an account by ID from the database
+func (r *accountRepository) GetAccountsById(accountId int) (entities.Account, error) {
+	var account entities.Account
+	err := r.db.First(&account, accountId).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return entities.Account{}, errors.New("account with ID %d not found")
+		}
+		return entities.Account{}, errors.New("error retrieving account by")
+	}
+	return account, nil
 }
 
 // FindAccounts retrieves all accounts from the database
@@ -87,6 +103,16 @@ func (r *accountRepository) UpdateNameAndAmountAccount(accountID entities.Accoun
 	err := r.db.Model(&entities.Account{}).Where("account_id = ?", accountID).Update("name", req.AccountName).Update("amount", req.Balance).Update("color_index", req.ColorIndex).Error
 	if err != nil {
 		return errors.New("could not update account name: " + err.Error())
+	}
+
+	return nil
+}
+
+func (r *accountRepository) UpdateAmountAccountById(accountId int, ammount float64) error {
+
+	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", accountId).Update("amount", ammount).Update("update_plan_date", time.Now()).Error
+	if err != nil {
+		return errors.New("could not update plan: " + err.Error())
 	}
 
 	return nil

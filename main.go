@@ -2,27 +2,26 @@ package main
 
 import (
 	"github.com/goproject/cmd"
+	_ "github.com/goproject/docs"
 )
 
-// @title           Swagger Example API
-// @version         1.0
-// @description     This is a sample server celler server.
-// @termsOfService  http://swagger.io/terms/
 
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+// @title User API by Fiber and Swagger
+// @version 1.0
+// @description API user management Server by Fiber | Doc by Swagger.
 
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+// @contact.name admin
+// @contact.url http://subalgo.com/support
+// @contact.email admin@subalgo.com
 
-// @host      localhost:8080
-// @BasePath  /api/v1
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @securityDefinitions.basic  BasicAuth
+// @schemes https http
 
-// @externalDocs.description  OpenAPI
-// @externalDocs.url          https://swagger.io/resources/open-api/
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 func main() {
 	cmd.Excecute()
 }

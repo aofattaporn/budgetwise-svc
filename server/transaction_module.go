@@ -19,7 +19,10 @@ type transactionModule struct {
 func (m *moduleFactory) TransactionModule() ITransactionModule {
 
 	repository := repositories.TransactionRepository(m.s.db.GetDb())
-	useases := useases.TransactionUsecase(m.s.logger, repository)
+	acRepo := repositories.AccountRepository(m.s.db.GetDb())
+	planRepo := repositories.PlanRepository(m.s.db.GetDb())
+
+	useases := useases.TransactionUsecase(m.s.logger, repository, acRepo, planRepo)
 	handler := handlers.TransactionHandler(useases, m.s.logger)
 
 	return &transactionModule{

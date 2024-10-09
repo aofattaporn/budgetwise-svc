@@ -1,0 +1,29 @@
+{
+    "schemes": [
+        "https",
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "API user management Server by Fiber | Doc by Swagger.",
+        "title": "User API by Fiber and Swagger",
+        "contact": {
+            "name": "admin",
+            "url": "http://subalgo.com/support",
+            "email": "admin@subalgo.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "paths": {},
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

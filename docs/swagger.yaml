@@ -1,0 +1,21 @@
+info:
+  contact:
+    email: admin@subalgo.com
+    name: admin
+    url: http://subalgo.com/support
+  description: API user management Server by Fiber | Doc by Swagger.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: User API by Fiber and Swagger
+  version: "1.0"
+paths: {}
+schemes:
+- https
+- http
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

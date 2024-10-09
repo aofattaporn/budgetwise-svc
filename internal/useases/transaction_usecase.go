@@ -1,6 +1,7 @@
 package useases
 
 import (
+	"errors"
 	"time"
 
 	"github.com/goproject/internal/customerrors"
@@ -16,10 +17,12 @@ type ITransactionUsecase interface {
 	DeleteAllTransactions() error
 }
 
-func TransactionUsecase(logger log.ILogger, repository repositories.ITransactionRepository) ITransactionUsecase {
+func TransactionUsecase(logger log.ILogger, repository repositories.ITransactionRepository, accountRepo repositories.IAccountRepository, planRepo repositories.IPlanRepository) ITransactionUsecase {
 	return &transactionsUsecase{
-		l: logger,
-		r: repository,
+		l:           logger,
+		r:           repository,
+		accountRepo: accountRepo,
+		planRepo:    planRepo,
 	}
 }
 
@@ -45,8 +48,22 @@ func (u *transactionsUsecase) GetTransaction(date string) (entities.TransactionL
 
 func (u *transactionsUsecase) CreateTransactions(req entities.TransactionReq) (entities.TransactionListRes, error) {
 
+	u.l.ServiceInfof("update amount plans by id: (%s)", req.PlanId)
+	err := u.UpdateAccountPlan(req.PlanId, req.Operation, req.Amount)
+	if err != nil {
+		u.l.Errorf("[error] update amount plans: %v", err)
+		return nil, customerrors.TECHNICAL_ERROR(err.Error())
+	}
+
+	u.l.ServiceInfof("update salary account by id: (%s)", req.AccountId)
+	err = u.UpdateAccountAmount(req.AccountId, req.Operation, req.Amount)
+	if err != nil {
+		u.l.Errorf("[error] update salary account: %v", err)
+		return nil, customerrors.TECHNICAL_ERROR(err.Error())
+	}
+
 	u.l.ServiceInfof("create transaction name: (%s)", req.Name)
-	err := u.r.AddTransaction(entities.Transaction{
+	err = u.r.AddTransaction(entities.Transaction{
 		Name:       req.Name,
 		Amount:     req.Amount,
 		Operation:  req.Operation,
@@ -57,16 +74,12 @@ func (u *transactionsUsecase) CreateTransactions(req entities.TransactionReq) (e
 		AccountId:  req.AccountId,
 	})
 
-	u.l.ServiceInfof("update plan amount transaction name: (%s)", req.Name)
-	u.planRepo.UpdateAmountPlanById(req.PlanId, req.Amount-req.Amount)
-
-	u.l.ServiceInfof("update salary amount transaction name: (%s)", req.Name)
-
 	if err != nil {
 		u.l.Errorf("create transaction error %v", err)
 		return entities.TransactionListRes{}, customerrors.TECHNICAL_ERROR(err.Error())
 	}
 
+	u.l.ServiceInfof("create transaction success")
 	return entities.TransactionListRes{}, nil
 }
 
@@ -88,4 +101,58 @@ func (u *transactionsUsecase) DeleteAllTransactions() error {
 	}
 
 	return nil
+}
+
+func (u *transactionsUsecase) UpdateAccountAmount(accountId int, operation string, orignAmmount float64) error {
+	account, err := u.accountRepo.GetAccountsById(accountId)
+	if err != nil {
+		return err
+	}
+
+	amount, err := CheckOperations(operation, account.Balance, orignAmmount)
+	if err != nil {
+		return err
+	}
+
+	account.Balance = amount
+	err = u.accountRepo.UpdateAccount(account)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *transactionsUsecase) UpdateAccountPlan(planId int, operation string, orignAmmount float64) error {
+	plan, err := u.planRepo.GetPlanById(planId)
+	if err != nil {
+		return err
+	}
+
+	amount, err := CheckOperations(operation, plan.Amount, orignAmmount)
+	if err != nil {
+		return err
+	}
+
+	plan.Amount = amount
+	err = u.planRepo.UpdatePlan(plan)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CheckOperations(operation string, originalAmount float64, ammount float64) (float64, error) {
+	switch operation {
+	case "transfer":
+		return (originalAmount - ammount), nil
+	case "income":
+		return (originalAmount + ammount), nil
+	case "change":
+		// TODO: handler on change
+		return originalAmount, nil
+	default:
+		return 0, errors.New("can't to mapping operation error")
+	}
 }

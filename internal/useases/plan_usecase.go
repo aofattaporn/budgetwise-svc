@@ -9,6 +9,7 @@ import (
 )
 
 type IPlanUsecase interface {
+	GetPlanById(planId int) entities.Plan
 	GetAllPlans() entities.PlanList
 	CreatePlan(req entities.PlanningRequest) (*entities.PlanList, error)
 	UpdatePlan(planId int, req entities.PlanningRequest) (*entities.PlanList, error)
@@ -25,6 +26,14 @@ func PlanUsecase(logger log.ILogger, repository repositories.IPlanRepository) IP
 type planUsecase struct {
 	l log.ILogger
 	r repositories.IPlanRepository
+}
+
+func (u *planUsecase) GetPlanById(planId int) entities.Plan {
+	plans, err := u.r.GetPlanById(planId)
+	if err != nil {
+		u.l.Errorf("find plan error: %v", err)
+	}
+	return plans
 }
 
 func (u *planUsecase) GetAllPlans() entities.PlanList {

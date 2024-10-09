@@ -5,12 +5,14 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities"
 	"github.com/goproject/internal/useases"
 	"github.com/goproject/pkg/log"
 )
 
 type IPlanHandler interface {
+	GetPlanById(c *fiber.Ctx) error
 	GetAllPlans(c *fiber.Ctx) error
 	CreatePlan(c *fiber.Ctx) error
 	UpdatePlan(c *fiber.Ctx) error
@@ -74,6 +76,19 @@ func (h *planHandler) UpdatePlan(c *fiber.Ctx) error {
 	return c.JSON(&entities.Response{
 		Code: 1000,
 		Data: plans,
+	})
+}
+
+func (h *planHandler) GetPlanById(c *fiber.Ctx) error {
+
+	planId, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return customerrors.INVALID_PERAETERS_ERROR("can't to find plan id")
+	}
+
+	return c.JSON(&entities.Response{
+		Code: 1000,
+		Data: h.u.GetPlanById(planId),
 	})
 }
 
