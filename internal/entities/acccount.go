@@ -1,3 +1,4 @@
+// internal/entities/account.go
 package entities
 
 import (

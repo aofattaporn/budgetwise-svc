@@ -1,3 +1,124 @@
+definitions:
+  entities.Account:
+    properties:
+      accountId:
+        type: integer
+      accountName:
+        type: string
+      balance:
+        type: number
+      colorIndex:
+        type: integer
+      createDate:
+        type: string
+      updatePlanDate:
+        type: string
+      userId:
+        type: integer
+    type: object
+  entities.AccountRequest:
+    properties:
+      accountName:
+        type: string
+      balance:
+        type: number
+      colorIndex:
+        type: integer
+    type: object
+  entities.ErrorResponse:
+    description: Response containing account list
+    properties:
+      code:
+        type: integer
+      errorMessage:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  entities.Plan:
+    properties:
+      accountID:
+        type: integer
+      amount:
+        type: number
+      createDate:
+        type: string
+      iconIndex:
+        type: integer
+      name:
+        type: string
+      planID:
+        type: integer
+      updatePlanDate:
+        type: string
+      usage:
+        type: number
+      userID:
+        type: integer
+    type: object
+  entities.PlanningRequest:
+    properties:
+      accountId:
+        type: integer
+      amount:
+        type: number
+      iconIndex:
+        type: integer
+      name:
+        type: string
+    type: object
+  entities.Response:
+    description: Generic response format
+    properties:
+      code:
+        type: integer
+      data: {}
+      description:
+        type: string
+    type: object
+  entities.SalaryAndResetDate:
+    properties:
+      currentUsageMonthly:
+        type: number
+      resetDatePlanning:
+        type: string
+      salary:
+        type: number
+    type: object
+  entities.Transaction:
+    properties:
+      accountId:
+        type: integer
+      amount:
+        type: number
+      createDate:
+        type: string
+      name:
+        type: string
+      operation:
+        type: string
+      planId:
+        type: integer
+      transactionId:
+        type: integer
+      updateDate:
+        type: string
+      userId:
+        type: integer
+    type: object
+  entities.TransactionReq:
+    properties:
+      accountId:
+        type: integer
+      amount:
+        type: number
+      name:
+        type: string
+      operation:
+        type: string
+      planId:
+        type: integer
+    type: object
 info:
   contact:
     email: admin@subalgo.com
@@ -9,7 +130,475 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: User API by Fiber and Swagger
   version: "1.0"
-paths: {}
+paths:
+  /accounts:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all accounts from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Delete all accounts
+      tags:
+      - accounts
+    get:
+      consumes:
+      - application/json
+      description: Get all accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Account'
+                  type: array
+              type: object
+      summary: Show all accounts
+      tags:
+      - accounts
+    post:
+      consumes:
+      - application/json
+      description: Create an account with the provided data
+      parameters:
+      - description: Account Request
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/entities.AccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Create a new account
+      tags:
+      - accounts
+    put:
+      consumes:
+      - application/json
+      description: Update an account with the provided data
+      parameters:
+      - description: Account Data
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Account'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Update an account
+      tags:
+      - accounts
+  /accounts/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an account by ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Delete an account
+      tags:
+      - accounts
+    patch:
+      consumes:
+      - application/json
+      description: Update specific fields of an account by ID
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Partial Account Request
+        in: body
+        name: account
+        required: true
+        schema:
+          $ref: '#/definitions/entities.AccountRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Partially update an account
+      tags:
+      - accounts
+  /plans:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all plans
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with list of plans
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Plan'
+                  type: array
+              type: object
+      summary: Get all plans
+      tags:
+      - plans
+    post:
+      consumes:
+      - application/json
+      description: Create a new plan with the provided data
+      parameters:
+      - description: Plan Request
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/entities.PlanningRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with created plan
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Plan'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Create a new plan
+      tags:
+      - plans
+  /plans/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a plan by ID
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with deleted plan
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Plan'
+              type: object
+        "400":
+          description: Invalid ID format
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Plan not found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Delete a plan
+      tags:
+      - plans
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a plan by its ID
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with plan details
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Plan'
+              type: object
+        "400":
+          description: Invalid ID format
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Plan not found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Get a plan by ID
+      tags:
+      - plans
+    put:
+      consumes:
+      - application/json
+      description: Update a plan with the provided data
+      parameters:
+      - description: Plan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Plan Request
+        in: body
+        name: plan
+        required: true
+        schema:
+          $ref: '#/definitions/entities.PlanningRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with updated plan
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Plan'
+              type: object
+        "400":
+          description: Invalid ID format
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Update an existing plan
+      tags:
+      - plans
+  /transactions:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve transactions for a specific date
+      parameters:
+      - description: Transaction date
+        in: query
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with list of transactions
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entities.Transaction'
+                  type: array
+              type: object
+        "400":
+          description: Invalid input parameters
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Get all transactions by date
+      tags:
+      - transactions
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction with the provided data
+      parameters:
+      - description: Transaction Request
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/entities.TransactionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with created transaction
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.Transaction'
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Create a new transaction
+      tags:
+      - transactions
+  /transactions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a transaction by ID
+      parameters:
+      - description: Transaction ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response indicating deletion
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Invalid ID format
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "404":
+          description: Transaction not found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Delete a transaction
+      tags:
+      - transactions
+  /transactions/all:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all transactions in the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response indicating all transactions deletion
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Delete all transactions
+      tags:
+      - transactions
+  /users/salary:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the salary details for a specific user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success response with user's salary information
+          schema:
+            allOf:
+            - $ref: '#/definitions/entities.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/entities.SalaryAndResetDate'
+              type: object
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/entities.ErrorResponse'
+      summary: Get user salary information
+      tags:
+      - users
 schemes:
 - https
 - http

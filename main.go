@@ -5,7 +5,6 @@ import (
 	_ "github.com/goproject/docs"
 )
 
-
 // @title User API by Fiber and Swagger
 // @version 1.0
 // @description API user management Server by Fiber | Doc by Swagger.

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/goproject/internal/constants"
-	"github.com/goproject/internal/entities"
+	"github.com/goproject/internal/entities" // Import where `Response` is defined
 	"github.com/goproject/internal/useases"
 	"github.com/goproject/pkg/log"
 )
@@ -31,16 +31,32 @@ func AccountHandler(usease useases.IAccountUsecase, logger log.ILogger) IAccount
 	}
 }
 
+// ShowAccount godoc
+// @Summary      Show all accounts
+// @Description  Get all accounts
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  entities.Response{data=[]entities.Account}
+// @Router       /accounts [get]
 func (h *accountHandler) GetAllAccounts(c *fiber.Ctx) error {
 	return c.JSON(&entities.Response{
 		Code:        1000,
 		Description: constants.STATUS().SUCCESS,
-		Data:        h.u.GetAllAccounts(),
+		Data:        h.u.GetAllAccounts(), // AccountsList
 	})
 }
 
+// CreateAccount godoc
+// @Summary      Create a new account
+// @Description  Create an account with the provided data
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        account body entities.AccountRequest true "Account Request"
+// @Success      200  {object}  entities.Response{data=object}
+// @Router       /accounts [post]
 func (h *accountHandler) CreateAccount(c *fiber.Ctx) error {
-
 	req := new(entities.AccountRequest)
 	if err := c.BodyParser(req); err != nil {
 		return err
@@ -54,8 +70,16 @@ func (h *accountHandler) CreateAccount(c *fiber.Ctx) error {
 	})
 }
 
+// UpdateAccount godoc
+// @Summary      Update an account
+// @Description  Update an account with the provided data
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        account body entities.Account true "Account Data"
+// @Success      200  {object}  entities.Response{data=object}
+// @Router       /accounts [put]
 func (h *accountHandler) UpdateAccount(c *fiber.Ctx) error {
-
 	req := new(entities.Account)
 	if err := c.BodyParser(req); err != nil {
 		return err
@@ -69,8 +93,16 @@ func (h *accountHandler) UpdateAccount(c *fiber.Ctx) error {
 	})
 }
 
+// DeleteAccount godoc
+// @Summary      Delete an account
+// @Description  Delete an account by ID
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Account ID"
+// @Success      200  {object}  entities.Response{data=object}
+// @Router       /accounts/{id} [delete]
 func (h *accountHandler) DeleteAccount(c *fiber.Ctx) error {
-
 	accountId, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return &fiber.Error{Code: 400, Message: "convert id error"}
@@ -84,6 +116,14 @@ func (h *accountHandler) DeleteAccount(c *fiber.Ctx) error {
 	})
 }
 
+// DeleteAllAccounts godoc
+// @Summary      Delete all accounts
+// @Description  Delete all accounts from the system
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  entities.Response{data=object}
+// @Router       /accounts [delete]
 func (h *accountHandler) DeleteAllAccounts(c *fiber.Ctx) error {
 	h.u.DeleteAllAccounts()
 	return c.JSON(&entities.Response{
@@ -93,8 +133,17 @@ func (h *accountHandler) DeleteAllAccounts(c *fiber.Ctx) error {
 	})
 }
 
+// PatchAccount godoc
+// @Summary      Partially update an account
+// @Description  Update specific fields of an account by ID
+// @Tags         accounts
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Account ID"
+// @Param        account body entities.AccountRequest true "Partial Account Request"
+// @Success      200  {object}  entities.Response{data=object}
+// @Router       /accounts/{id} [patch]
 func (h *accountHandler) PatchAccount(c *fiber.Ctx) error {
-
 	accountId, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return &fiber.Error{Code: 400, Message: "convert id error"}
