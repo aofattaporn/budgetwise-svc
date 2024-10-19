@@ -128,8 +128,7 @@ func (h *transactionHandler) DeleteTransactions(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Success      200  {object}  entities.Response{data=object}  "Success response indicating all transactions deletion"
-// @Failure      500  {object}  entities.ErrorResponse  "Internal server error"
-// @Router       /transactions/all [delete]
+// @Router       /transactions [delete]
 func (h *transactionHandler) DeleteAllTransactions(c *fiber.Ctx) error {
 	err := h.u.DeleteAllTransactions()
 	if err != nil {

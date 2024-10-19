@@ -279,7 +279,7 @@ const docTemplate = `{
         },
         "/plans": {
             "get": {
-                "description": "Retrieve a list of all plans",
+                "description": "Retrieve all planning entries",
                 "consumes": [
                     "application/json"
                 ],
@@ -292,7 +292,7 @@ const docTemplate = `{
                 "summary": "Get all plans",
                 "responses": {
                     "200": {
-                        "description": "Success response with list of plans",
+                        "description": "Success response with all plans information",
                         "schema": {
                             "allOf": [
                                 {
@@ -304,18 +304,24 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/entities.Plan"
+                                                "$ref": "#/definitions/entities.PlanDetails"
                                             }
                                         }
                                     }
                                 }
                             ]
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
                     }
                 }
             },
             "post": {
-                "description": "Create a new plan with the provided data",
+                "description": "Create a new planning entry",
                 "consumes": [
                     "application/json"
                 ],
@@ -328,8 +334,8 @@ const docTemplate = `{
                 "summary": "Create a new plan",
                 "parameters": [
                     {
-                        "description": "Plan Request",
-                        "name": "plan",
+                        "description": "Plan information",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -339,7 +345,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with created plan",
+                        "description": "Success response with created plan information",
                         "schema": {
                             "allOf": [
                                 {
@@ -349,7 +355,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
@@ -373,7 +379,7 @@ const docTemplate = `{
         },
         "/plans/{id}": {
             "get": {
-                "description": "Retrieve a plan by its ID",
+                "description": "Retrieve a planning entry by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -395,7 +401,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with plan details",
+                        "description": "Success response with plan information",
                         "schema": {
                             "allOf": [
                                 {
@@ -405,21 +411,21 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Invalid ID format",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Plan not found",
+                        "schema": {
+                            "$ref": "#/definitions/customerrors.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/entities.ErrorResponse"
                         }
@@ -427,7 +433,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update a plan with the provided data",
+                "description": "Update a planning entry by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -447,8 +453,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Updated Plan Request",
-                        "name": "plan",
+                        "description": "Updated plan information",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -458,7 +464,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with updated plan",
+                        "description": "Success response with updated plan information",
                         "schema": {
                             "allOf": [
                                 {
@@ -468,7 +474,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
@@ -476,7 +482,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid ID format",
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Plan not found",
                         "schema": {
                             "$ref": "#/definitions/entities.ErrorResponse"
                         }
@@ -490,7 +502,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a plan by ID",
+                "description": "Delete a planning entry by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -500,7 +512,7 @@ const docTemplate = `{
                 "tags": [
                     "plans"
                 ],
-                "summary": "Delete a plan",
+                "summary": "Delete a plan by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -512,7 +524,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with deleted plan",
+                        "description": "Success response indicating plan deletion",
                         "schema": {
                             "allOf": [
                                 {
@@ -522,21 +534,21 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Invalid ID format",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Plan not found",
+                        "schema": {
+                            "$ref": "#/definitions/customerrors.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/entities.ErrorResponse"
                         }
@@ -788,12 +800,6 @@ const docTemplate = `{
                             ]
                         }
                     },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
@@ -805,6 +811,20 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "customerrors.CustomError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "errorType": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Account": {
             "type": "object",
             "properties": {
@@ -860,11 +880,11 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.Plan": {
+        "entities.PlanDetails": {
             "type": "object",
             "properties": {
-                "accountID": {
-                    "type": "integer"
+                "accountName": {
+                    "type": "string"
                 },
                 "amount": {
                     "type": "number"
@@ -878,17 +898,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "planID": {
+                "planId": {
                     "type": "integer"
                 },
-                "updatePlanDate": {
+                "updateDate": {
                     "type": "string"
                 },
                 "usage": {
                     "type": "number"
-                },
-                "userID": {
-                    "type": "integer"
                 }
             }
         },

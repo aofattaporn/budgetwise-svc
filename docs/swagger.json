@@ -275,7 +275,7 @@
         },
         "/plans": {
             "get": {
-                "description": "Retrieve a list of all plans",
+                "description": "Retrieve all planning entries",
                 "consumes": [
                     "application/json"
                 ],
@@ -288,7 +288,7 @@
                 "summary": "Get all plans",
                 "responses": {
                     "200": {
-                        "description": "Success response with list of plans",
+                        "description": "Success response with all plans information",
                         "schema": {
                             "allOf": [
                                 {
@@ -300,18 +300,24 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/entities.Plan"
+                                                "$ref": "#/definitions/entities.PlanDetails"
                                             }
                                         }
                                     }
                                 }
                             ]
                         }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
                     }
                 }
             },
             "post": {
-                "description": "Create a new plan with the provided data",
+                "description": "Create a new planning entry",
                 "consumes": [
                     "application/json"
                 ],
@@ -324,8 +330,8 @@
                 "summary": "Create a new plan",
                 "parameters": [
                     {
-                        "description": "Plan Request",
-                        "name": "plan",
+                        "description": "Plan information",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -335,7 +341,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with created plan",
+                        "description": "Success response with created plan information",
                         "schema": {
                             "allOf": [
                                 {
@@ -345,7 +351,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
@@ -369,7 +375,7 @@
         },
         "/plans/{id}": {
             "get": {
-                "description": "Retrieve a plan by its ID",
+                "description": "Retrieve a planning entry by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -391,7 +397,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with plan details",
+                        "description": "Success response with plan information",
                         "schema": {
                             "allOf": [
                                 {
@@ -401,21 +407,21 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Invalid ID format",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Plan not found",
+                        "schema": {
+                            "$ref": "#/definitions/customerrors.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/entities.ErrorResponse"
                         }
@@ -423,7 +429,7 @@
                 }
             },
             "put": {
-                "description": "Update a plan with the provided data",
+                "description": "Update a planning entry by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -443,8 +449,8 @@
                         "required": true
                     },
                     {
-                        "description": "Updated Plan Request",
-                        "name": "plan",
+                        "description": "Updated plan information",
+                        "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -454,7 +460,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with updated plan",
+                        "description": "Success response with updated plan information",
                         "schema": {
                             "allOf": [
                                 {
@@ -464,7 +470,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
@@ -472,7 +478,13 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid ID format",
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Plan not found",
                         "schema": {
                             "$ref": "#/definitions/entities.ErrorResponse"
                         }
@@ -486,7 +498,7 @@
                 }
             },
             "delete": {
-                "description": "Delete a plan by ID",
+                "description": "Delete a planning entry by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -496,7 +508,7 @@
                 "tags": [
                     "plans"
                 ],
-                "summary": "Delete a plan",
+                "summary": "Delete a plan by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -508,7 +520,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success response with deleted plan",
+                        "description": "Success response indicating plan deletion",
                         "schema": {
                             "allOf": [
                                 {
@@ -518,21 +530,21 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/entities.Plan"
+                                            "$ref": "#/definitions/entities.PlanDetails"
                                         }
                                     }
                                 }
                             ]
                         }
                     },
-                    "400": {
-                        "description": "Invalid ID format",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ErrorResponse"
-                        }
-                    },
                     "404": {
                         "description": "Plan not found",
+                        "schema": {
+                            "$ref": "#/definitions/customerrors.CustomError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/entities.ErrorResponse"
                         }
@@ -784,12 +796,6 @@
                             ]
                         }
                     },
-                    "404": {
-                        "description": "User not found",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
@@ -801,6 +807,20 @@
         }
     },
     "definitions": {
+        "customerrors.CustomError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "errorType": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Account": {
             "type": "object",
             "properties": {
@@ -856,11 +876,11 @@
                 }
             }
         },
-        "entities.Plan": {
+        "entities.PlanDetails": {
             "type": "object",
             "properties": {
-                "accountID": {
-                    "type": "integer"
+                "accountName": {
+                    "type": "string"
                 },
                 "amount": {
                     "type": "number"
@@ -874,17 +894,14 @@
                 "name": {
                     "type": "string"
                 },
-                "planID": {
+                "planId": {
                     "type": "integer"
                 },
-                "updatePlanDate": {
+                "updateDate": {
                     "type": "string"
                 },
                 "usage": {
                     "type": "number"
-                },
-                "userID": {
-                    "type": "integer"
                 }
             }
         },
