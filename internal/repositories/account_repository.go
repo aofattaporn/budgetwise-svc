@@ -76,9 +76,13 @@ func (r *accountRepository) UpdateAccount(account entities.Account) error {
 
 // DeleteAccount deletes an account from the database by its ID
 func (r *accountRepository) DeleteAccount(accountID entities.AccountId) error {
-	err := r.db.Delete(&entities.Account{}, accountID).Error
-	if err != nil {
-		return errors.New("could not delete account: " + err.Error())
+	result := r.db.Delete(&entities.Account{}, accountID)
+	if result.Error != nil {
+		return errors.New("could not delete account: " + result.Error.Error())
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("no accounts were deleted")
 	}
 
 	return nil
@@ -100,7 +104,7 @@ func (r *accountRepository) DeleteAllAccounts() error {
 
 // UpdateAccountName updates only the account's name in the database
 func (r *accountRepository) UpdateNameAndAmountAccount(accountID entities.AccountId, req entities.AccountRequest) error {
-	err := r.db.Model(&entities.Account{}).Where("account_id = ?", accountID).Update("name", req.AccountName).Update("amount", req.Balance).Update("color_index", req.ColorIndex).Error
+	err := r.db.Model(&entities.Account{}).Where("id = ?", accountID).Update("name", req.AccountName).Update("balance", req.Balance).Update("color_index", req.ColorIndex).Error
 	if err != nil {
 		return errors.New("could not update account name: " + err.Error())
 	}

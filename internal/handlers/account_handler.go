@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/goproject/internal/constants"
+	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities" // Import where `Response` is defined
 	"github.com/goproject/internal/useases"
 	"github.com/goproject/pkg/log"
@@ -13,7 +14,6 @@ import (
 type IAccountHandler interface {
 	GetAllAccounts(c *fiber.Ctx) error
 	CreateAccount(c *fiber.Ctx) error
-	UpdateAccount(c *fiber.Ctx) error
 	DeleteAllAccounts(c *fiber.Ctx) error
 	DeleteAccount(c *fiber.Ctx) error
 	PatchAccount(c *fiber.Ctx) error
@@ -70,29 +70,6 @@ func (h *accountHandler) CreateAccount(c *fiber.Ctx) error {
 	})
 }
 
-// UpdateAccount godoc
-// @Summary      Update an account
-// @Description  Update an account with the provided data
-// @Tags         accounts
-// @Accept       json
-// @Produce      json
-// @Param        account body entities.Account true "Account Data"
-// @Success      200  {object}  entities.Response{data=object}
-// @Router       /accounts [put]
-func (h *accountHandler) UpdateAccount(c *fiber.Ctx) error {
-	req := new(entities.Account)
-	if err := c.BodyParser(req); err != nil {
-		return err
-	}
-	h.u.UpdateAccount(*req)
-
-	return c.JSON(&entities.Response{
-		Code:        1000,
-		Description: constants.STATUS().SUCCESS,
-		Data:        nil,
-	})
-}
-
 // DeleteAccount godoc
 // @Summary      Delete an account
 // @Description  Delete an account by ID
@@ -107,12 +84,15 @@ func (h *accountHandler) DeleteAccount(c *fiber.Ctx) error {
 	if err != nil {
 		return &fiber.Error{Code: 400, Message: "convert id error"}
 	}
-	h.u.DeleteAccount(accountId)
+
+	err = h.u.DeleteAccount(accountId)
+	if err != nil {
+		return customerrors.BUSINESS_ERROR(err.Error())
+	}
 
 	return c.JSON(&entities.Response{
 		Code:        1000,
 		Description: constants.STATUS().SUCCESS,
-		Data:        nil,
 	})
 }
 

@@ -11,7 +11,6 @@ import (
 type IAccountUsecase interface {
 	GetAllAccounts() entities.AccountsList
 	CreateAccount(req entities.AccountRequest)
-	UpdateAccount(req entities.Account)
 	DeleteAccount(accountId entities.AccountId) error
 	DeleteAllAccounts() error
 	PatchAccount(accountId entities.AccountId, req entities.AccountRequest)
@@ -71,6 +70,7 @@ func (u *accountUsecase) DeleteAccount(accountId entities.AccountId) error {
 	err := u.r.DeleteAccount(accountId)
 	if err != nil {
 		u.l.Errorf("delete accounts error %v", err)
+		return err
 	}
 	return nil
 }

@@ -70,7 +70,7 @@ func (h *middlewaresHandler) Logger() fiber.Handler {
 
 		defer func() {
 			h.logger.Info(string(c.Context().Method()) + ":" + string(c.Context().RequestURI()))
-			fmt.Println("=========================================================================")
+			fmt.Println("===================================================================================")
 		}()
 
 		return c.Next()
