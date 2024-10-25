@@ -56,13 +56,13 @@ func (r *planRepository) FindAllPlans() ([]entities.PlanDetails, error) {
 	var plans []entities.PlanDetails
 	err := r.db.Model(&entities.Plan{}).
 		Select(
-			"plans.plan_id AS plan_id, " +
+			"plans.id AS plan_id, " +
 				"plans.name AS name, " +
-				"plans.plan_usage AS plan_usage, " +
+				"plans.usages AS plan_usage, " +
 				"plans.amount AS amount, " +
 				"plans.create_date AS create_date, " +
 				"plans.icon_index AS icon_index, " +
-				"plans.update_plan_date AS update_plan_date, " +
+				"plans.update_date AS update_plan_date, " +
 				"accounts.name AS accountName").
 		Joins("LEFT JOIN accounts ON plans.account_id = accounts.account_id").
 		Scan(&plans).Error
@@ -99,7 +99,7 @@ func (r *planRepository) UpdatePlan(plan entities.Plan) error {
 		return errors.New("could not check account: " + err.Error())
 	}
 
-	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", plan.PlanID).Update("name", plan.Name).Update("amount", plan.Amount).Update("icon_index", plan.IconIndex).Update("account_id", plan.AccountID).Update("update_plan_date", plan.UpdatePlanDate).Error
+	err := r.db.Model(&entities.Plan{}).Where("id = ?", plan.PlanID).Update("name", plan.Name).Update("amount", plan.Amount).Update("icon_index", plan.IconIndex).Update("account_id", plan.AccountID).Update("update_date", plan.UpdatePlanDate).Error
 	if err != nil {
 		return errors.New("could not update plan: " + err.Error())
 	}
@@ -109,7 +109,7 @@ func (r *planRepository) UpdatePlan(plan entities.Plan) error {
 
 func (r *planRepository) UpdateAmountPlanById(planId int, ammount float64) error {
 
-	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", planId).Update("amount", ammount).Update("update_plan_date", time.Now()).Error
+	err := r.db.Model(&entities.Plan{}).Where("id = ?", planId).Update("amount", ammount).Update("update_date", time.Now()).Error
 	if err != nil {
 		return errors.New("could not update plan: " + err.Error())
 	}

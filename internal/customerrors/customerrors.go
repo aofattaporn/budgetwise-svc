@@ -10,6 +10,15 @@ func (e *CustomError) Error() string {
 	return e.Description
 }
 
+// **** technical error ***
+func DATA_NOT_FOUND(errorMsg string) *CustomError {
+	return &CustomError{
+		Code:        1699,
+		ErrorType:   ERROR_TYPE().DATA_NOT_FOUND,
+		Description: errorMsg,
+	}
+}
+
 // **** invalid parameters error ***
 func INVALID_PERAETERS_ERROR(errorMsg string) *CustomError {
 	return &CustomError{

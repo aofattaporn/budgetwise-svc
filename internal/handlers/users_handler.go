@@ -35,9 +35,15 @@ func UserHandler(usease useases.IUserUsecase, logger log.ILogger) IUserHandler {
 // @Failure      500  {object}  entities.ErrorResponse  "Internal server error"
 // @Router       /users/salary [get]
 func (h *userHandler) GetSalary(c *fiber.Ctx) error {
-	userInfo := h.u.GetSalaryAndDateReset(1)
-	if userInfo == nil {
-		return customerrors.BUSINESS_ERROR("User not found")
+
+	monthYear := c.Query("monthYear")
+	if monthYear == "" {
+		return customerrors.INVALID_PERAETERS_ERROR("Invalid input parameters")
+	}
+
+	userInfo, err := h.u.GetSalaryAndDateReset(1, monthYear)
+	if err != nil {
+		return err
 	}
 
 	return c.JSON(&entities.Response{

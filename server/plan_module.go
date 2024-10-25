@@ -33,8 +33,8 @@ func (m *planModule) Init() {
 	// handlers
 	m.r.Post(constants.ROUTE().PLANS, m.h.CreatePlan)
 	m.r.Get(constants.ROUTE().PLANS, m.h.GetAllPlans)
-	m.r.Put(constants.ROUTE().PLANS_ID, m.h.UpdatePlan)
 	m.r.Get(constants.ROUTE().PLANS_ID, m.h.GetPlanById)
+	m.r.Put(constants.ROUTE().PLANS_ID, m.h.UpdatePlan)
 	m.r.Delete(constants.ROUTE().PLANS_ID, m.h.DeletePlans)
 
 }

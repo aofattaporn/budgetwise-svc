@@ -114,7 +114,7 @@ func (r *accountRepository) UpdateNameAndAmountAccount(accountID entities.Accoun
 
 func (r *accountRepository) UpdateAmountAccountById(accountId int, ammount float64) error {
 
-	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", accountId).Update("amount", ammount).Update("update_plan_date", time.Now()).Error
+	err := r.db.Model(&entities.Plan{}).Where("plan_id = ?", accountId).Update("amount", ammount).Update("update_date", time.Now()).Error
 	if err != nil {
 		return errors.New("could not update plan: " + err.Error())
 	}

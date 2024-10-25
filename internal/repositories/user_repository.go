@@ -6,7 +6,7 @@ import (
 )
 
 type IUserRepository interface {
-	GetSalaryAndDateReset(userID int) (*entities.SalaryAndResetDate, error)
+	GetSalaryAndDateReset(userID int, monthYear string) (*entities.UserFinancialsRes, error)
 }
 
 type userRepository struct {
@@ -20,10 +20,15 @@ func UserRepository(database *gorm.DB) IUserRepository {
 	}
 }
 
-func (r *userRepository) GetSalaryAndDateReset(userID int) (*entities.SalaryAndResetDate, error) {
-	var user entities.SalaryAndResetDate
-	err := r.db.Table("users").Select("salary", "reset_date_planning", "current_usage_monthly").Where("user_id = ?", userID).First(&user).Error
+func (r *userRepository) GetSalaryAndDateReset(userID int, monthYear string) (*entities.UserFinancialsRes, error) {
+	var user entities.UserFinancialsRes
+	err := r.db.Table("user_financials").Select("salary", "month", "usages").
+		Where("user_id = ? AND DATE(month) = ?", userID, monthYear+"-01").
+		First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil
