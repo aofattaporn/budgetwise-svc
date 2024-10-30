@@ -1,12 +1,15 @@
 package repositories
 
 import (
+	"fmt"
+
 	"github.com/goproject/internal/entities"
 	"gorm.io/gorm"
 )
 
 type IUserRepository interface {
 	GetSalaryAndDateReset(userID int, monthYear string) (*entities.UserFinancialsRes, error)
+	AddNewSalaryBymonth(req *entities.UserFinancials) error
 }
 
 type userRepository struct {
@@ -32,4 +35,15 @@ func (r *userRepository) GetSalaryAndDateReset(userID int, monthYear string) (*e
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *userRepository) AddNewSalaryBymonth(req *entities.UserFinancials) error {
+	err := r.db.Create(&req).Error
+	if err != nil {
+		if err == gorm.ErrDuplicatedKey {
+			return fmt.Errorf("duplicate entry: %w", err)
+		}
+		return err
+	}
+	return nil
 }

@@ -4,7 +4,8 @@ type route struct {
 	HEALTHCHECK string
 
 	// user route definind
-	SALARY string
+	SALARY  string
+	UserFin string
 
 	// accounts
 	ACCOUNTS           string
@@ -24,10 +25,13 @@ type route struct {
 func ROUTE() *route {
 	return &route{
 		HEALTHCHECK: "/health",
-		SALARY:      "/users/salary",
-		ACCOUNTS:    "/accounts",
+
+		// users
+		UserFin: "/usersfin",
+		SALARY:  "/users/salary",
 
 		// accounts
+		ACCOUNTS:           "/accounts",
 		ACCOUNTS_ACCOUNTID: "/accounts/:id",
 
 		// transactions

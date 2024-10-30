@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/goproject/pkg/log"
@@ -30,7 +29,6 @@ func MappingError(logger log.ILogger) fiber.ErrorHandler {
 			// *********** business error ***********
 			case customerrors.ERROR_TYPE().INVALID_PARAMETER_ERROR:
 				logger.Errorf("fiber response error : %+v", e)
-				fmt.Println("****************************************************************************************")
 				return c.Status(400).JSON(&entities.ErrorResponse{
 					Code:         1799,
 					Timestamp:    time.Now(),
@@ -40,7 +38,6 @@ func MappingError(logger log.ILogger) fiber.ErrorHandler {
 			// *********** business error ***********
 			case customerrors.ERROR_TYPE().BUSINESS_ERROR:
 				logger.Errorf("[error] business error : %+v", e)
-				fmt.Println("****************************************************************************************")
 				return c.Status(400).JSON(&entities.ErrorResponse{
 					Code:         1899,
 					Timestamp:    time.Now(),
@@ -50,7 +47,6 @@ func MappingError(logger log.ILogger) fiber.ErrorHandler {
 			// *********** technical error ***********
 			case customerrors.ERROR_TYPE().Technical_ERROR:
 				logger.Errorf("[error] technical error : %+v", e)
-				fmt.Println("****************************************************************************************")
 				return c.Status(500).JSON(&entities.ErrorResponse{
 					Code:         1999,
 					Timestamp:    time.Now(),
@@ -59,10 +55,10 @@ func MappingError(logger log.ILogger) fiber.ErrorHandler {
 
 			default:
 				logger.Errorf("internal server error : %+v", e)
-				internalServerErr := 200
-				return c.Status(500).JSON(&entities.Response{
-					Code:        internalServerErr,
-					Description: "message",
+				return c.Status(500).JSON(&entities.ErrorResponse{
+					Code:         e.Code,
+					Timestamp:    time.Now(),
+					ErrorMessage: e.Description,
 				})
 			}
 

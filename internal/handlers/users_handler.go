@@ -11,6 +11,7 @@ import (
 
 type IUserHandler interface {
 	GetSalary(c *fiber.Ctx) error
+	AddNewSalaryBymonth(c *fiber.Ctx) error
 }
 
 type userHandler struct {
@@ -42,6 +43,25 @@ func (h *userHandler) GetSalary(c *fiber.Ctx) error {
 	}
 
 	userInfo, err := h.u.GetSalaryAndDateReset(1, monthYear)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(&entities.Response{
+		Code:        1000,
+		Description: constants.STATUS().SUCCESS,
+		Data:        userInfo,
+	})
+}
+
+func (h *userHandler) AddNewSalaryBymonth(c *fiber.Ctx) error {
+
+	var req entities.UserFinancialsReq
+	if err := c.BodyParser(&req); err != nil {
+		return customerrors.INVALID_PERAETERS_ERROR("Invalid input parameters")
+	}
+
+	userInfo, err := h.u.AddNewSalaryBymonth(&req)
 	if err != nil {
 		return err
 	}

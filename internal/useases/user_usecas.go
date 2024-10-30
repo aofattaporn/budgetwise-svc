@@ -1,6 +1,8 @@
 package useases
 
 import (
+	"fmt"
+
 	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities"
 	"github.com/goproject/internal/repositories"
@@ -9,6 +11,7 @@ import (
 
 type IUserUsecase interface {
 	GetSalaryAndDateReset(userId int, monthYear string) (*entities.UserFinancialsRes, error)
+	AddNewSalaryBymonth(req *entities.UserFinancialsReq) (*entities.UserFinancialsRes, error)
 }
 
 type userUsecase struct {
@@ -25,7 +28,7 @@ func UserUsecase(logger log.ILogger, repository repositories.IUserRepository) IU
 
 func (h *userUsecase) GetSalaryAndDateReset(userId int, monthYear string) (*entities.UserFinancialsRes, error) {
 
-	h.l.Infof("get salary and usage from month %s", monthYear)
+	h.l.Infof("get salary and usage from month: %s", monthYear)
 	userFin, err := h.r.GetSalaryAndDateReset(userId, monthYear)
 
 	if err != nil {
@@ -39,4 +42,23 @@ func (h *userUsecase) GetSalaryAndDateReset(userId int, monthYear string) (*enti
 	}
 
 	return userFin, nil
+}
+
+func (u *userUsecase) AddNewSalaryBymonth(req *entities.UserFinancialsReq) (*entities.UserFinancialsRes, error) {
+
+	userId := 1
+	u.l.Infof("add salary and usage from month: %s", req.Month)
+	err := u.r.AddNewSalaryBymonth(&entities.UserFinancials{
+		UserId: userId,
+		Salary: req.Salary,
+		Month:  req.Month,
+		Usages: 0,
+	})
+
+	if err != nil {
+		u.l.Errorf("add salary and reset date error: %v", err)
+		return nil, customerrors.BUSINESS_ERROR(err.Error())
+	}
+
+	return u.GetSalaryAndDateReset(userId, fmt.Sprintf("%d-%02d", req.Month.Year(), req.Month.Month()))
 }

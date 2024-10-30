@@ -2,15 +2,20 @@ package entities
 
 import "time"
 
-type User struct {
-	UserID int       `gorm:"primaryKey;autoIncrement"`
+type UserFinancials struct {
+	UserId int       `gorm:"column:user_id;primaryKey" json:"user_id"`
+	Month  time.Time `gorm:"column:month;primaryKey" json:"month"`
 	Salary float64   `gorm:"column:salary" json:"salary"`
-	Month  time.Time `gorm:"column:reset_date_planning" json:"resetDatePlanning"`
-	Usages float64   `gorm:"column:current_usage_monthly" json:"currentUsageMonthly"`
+	Usages float64   `gorm:"column:usages" json:"usages"`
 }
 
 type UserFinancialsRes struct {
 	Salary float64   `gorm:"column:salary" json:"salary"`
 	Month  time.Time `gorm:"column:month" json:"month"`
 	Usages float64   `gorm:"column:usages" json:"usages"`
+}
+
+type UserFinancialsReq struct {
+	Salary float64   `gorm:"column:salary" json:"salary"`
+	Month  time.Time `gorm:"column:month" json:"month"`
 }
