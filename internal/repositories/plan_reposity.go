@@ -10,7 +10,7 @@ import (
 
 type IPlanRepository interface {
 	GetPlanById(planId int) (entities.Plan, error)
-	FindAllPlans() ([]entities.PlanDetails, error)
+	FindAllPlans(monthYear string) ([]entities.PlanDetails, error)
 	AddPlan(account entities.Plan) error
 	UpdatePlan(account entities.Plan) error
 	UpdateAmountPlanById(planId int, amount float64) error
@@ -29,13 +29,13 @@ func PlanRepository(database *gorm.DB) IPlanRepository {
 }
 
 type Account struct {
-	AccountID      int       `gorm:"primaryKey;column:account_id" json:"accountId"`
-	AccountName    string    `gorm:"column:name" json:"accountName"`
-	Balance        float64   `gorm:"column:amount" json:"balance"`
-	CreateDate     time.Time `gorm:"column:create_date" json:"createDate"`
-	UpdatePlanDate time.Time `gorm:"column:update_plan_date" json:"updatePlanDate"`
-	ColorIndex     int       `gorm:"column:color_index" json:"colorIndex"`
-	UserID         int       `gorm:"column:user_id" json:"userId"`
+	AccountID   int       `gorm:"primaryKey;column:account_id" json:"accountId"`
+	AccountName string    `gorm:"column:name" json:"accountName"`
+	Balance     float64   `gorm:"column:amount" json:"balance"`
+	CreateDate  time.Time `gorm:"column:create_date" json:"createDate"`
+	UpdateDate  time.Time `gorm:"column:update_date" json:"updateDate"`
+	ColorIndex  int       `gorm:"column:color_index" json:"colorIndex"`
+	UserID      int       `gorm:"column:user_id" json:"userId"`
 }
 
 // GetAccountsById retrieves an account by ID from the database
@@ -52,19 +52,22 @@ func (r *planRepository) GetPlanById(planId int) (entities.Plan, error) {
 }
 
 // FindAllPlans retrieves all plans with their associated accounts from the database
-func (r *planRepository) FindAllPlans() ([]entities.PlanDetails, error) {
+func (r *planRepository) FindAllPlans(monthYear string) ([]entities.PlanDetails, error) {
 	var plans []entities.PlanDetails
 	err := r.db.Model(&entities.Plan{}).
 		Select(
-			"plans.id AS plan_id, " +
-				"plans.name AS name, " +
-				"plans.usages AS plan_usage, " +
-				"plans.amount AS amount, " +
-				"plans.create_date AS create_date, " +
-				"plans.icon_index AS icon_index, " +
-				"plans.update_date AS update_plan_date, " +
+			"plans.id AS id, "+
+				"plans.name AS name, "+
+				"plans.type AS type, "+
+				"plans.usages AS usages, "+
+				"plans.amount AS amount, "+
+				"plans.create_date AS create_date, "+
+				"plans.icon_index AS icon_index, "+
+				"plans.update_date AS update_date, "+
+				"plans.month AS month, "+
 				"accounts.name AS accountName").
-		Joins("LEFT JOIN accounts ON plans.account_id = accounts.account_id").
+		Joins("LEFT JOIN accounts ON plans.account_id = accounts.id").
+		Where("DATE(plans.month) = ?", monthYear+"-01").
 		Scan(&plans).Error
 
 	if err != nil {
@@ -99,7 +102,7 @@ func (r *planRepository) UpdatePlan(plan entities.Plan) error {
 		return errors.New("could not check account: " + err.Error())
 	}
 
-	err := r.db.Model(&entities.Plan{}).Where("id = ?", plan.PlanID).Update("name", plan.Name).Update("amount", plan.Amount).Update("icon_index", plan.IconIndex).Update("account_id", plan.AccountID).Update("update_date", plan.UpdatePlanDate).Error
+	err := r.db.Model(&entities.Plan{}).Where("id = ?", plan.Id).Update("name", plan.Name).Update("amount", plan.Amount).Update("icon_index", plan.IconIndex).Update("account_id", plan.AccountID).Error
 	if err != nil {
 		return errors.New("could not update plan: " + err.Error())
 	}
@@ -108,7 +111,6 @@ func (r *planRepository) UpdatePlan(plan entities.Plan) error {
 }
 
 func (r *planRepository) UpdateAmountPlanById(planId int, ammount float64) error {
-
 	err := r.db.Model(&entities.Plan{}).Where("id = ?", planId).Update("amount", ammount).Update("update_date", time.Now()).Error
 	if err != nil {
 		return errors.New("could not update plan: " + err.Error())

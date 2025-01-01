@@ -3,6 +3,7 @@ package useases
 import (
 	"time"
 
+	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities"
 	"github.com/goproject/internal/repositories"
 	"github.com/goproject/pkg/log"
@@ -10,7 +11,7 @@ import (
 
 type IPlanUsecase interface {
 	GetPlanById(planId int) entities.Plan
-	GetAllPlans() entities.PlanList
+	GetAllPlans(monthYear string) (*entities.PlanList, error)
 	CreatePlan(req entities.PlanningRequest) (*entities.PlanList, error)
 	UpdatePlan(planId int, req entities.PlanningRequest) (*entities.PlanList, error)
 	DeletePlan(deleteId int) (*entities.PlanList, error)
@@ -36,31 +37,42 @@ func (u *planUsecase) GetPlanById(planId int) entities.Plan {
 	return plans
 }
 
-func (u *planUsecase) GetAllPlans() entities.PlanList {
-	plans, err := u.r.FindAllPlans()
+func (u *planUsecase) GetAllPlans(monthYear string) (*entities.PlanList, error) {
+	plans, err := u.r.FindAllPlans(monthYear)
 	if err != nil {
-		u.l.Errorf("find accounts error: %v", err)
+		u.l.Errorf("repository find all plans: %v", err)
+		return nil, customerrors.BUSINESS_ERROR(err.Error())
 	}
-	return plans
+
+	if plans == nil {
+		u.l.Infof("no plans found")
+		return nil, customerrors.DATA_NOT_FOUND("no plans found in this month")
+	}
+
+	return &plans, nil
 }
 
 func (u *planUsecase) CreatePlan(req entities.PlanningRequest) (*entities.PlanList, error) {
 	err := u.r.AddPlan(entities.Plan{
-		Name:           req.Name,
-		Usage:          0,
-		Amount:         req.Amount,
-		IconIndex:      req.IconIndex,
-		CreateDate:     time.Now(),
-		UpdatePlanDate: time.Now(),
-		UserID:         1,
-		AccountID:      req.AccountID,
+		Name:       req.Name,
+		Type:       req.Type,
+		Usage:      0,
+		Amount:     req.Amount,
+		IconIndex:  req.IconIndex,
+		CreateDate: time.Now(),
+		UpdateDate: time.Now(),
+		UserID:     1,
+		Month:      req.Month,
+		AccountID:  req.AccountID,
 	})
+
 	if err != nil {
 		u.l.Errorf("create plan error %v", err)
 		return nil, err
 	}
 
-	plans, err := u.r.FindAllPlans()
+	formattedDate := time.Now().Format("2006-01")
+	plans, err := u.r.FindAllPlans(formattedDate)
 	if err != nil {
 		u.l.Errorf("find plan error: %v", err)
 		return nil, err
@@ -71,21 +83,21 @@ func (u *planUsecase) CreatePlan(req entities.PlanningRequest) (*entities.PlanLi
 
 func (u *planUsecase) UpdatePlan(planId int, req entities.PlanningRequest) (*entities.PlanList, error) {
 	err := u.r.UpdatePlan(entities.Plan{
-		PlanID:         planId,
-		Name:           req.Name,
-		Usage:          0,
-		Amount:         req.Amount,
-		IconIndex:      req.IconIndex,
-		UpdatePlanDate: time.Now(),
-		UserID:         1,
-		AccountID:      req.AccountID,
+		Id:         planId,
+		Name:       req.Name,
+		Usage:      0,
+		Amount:     req.Amount,
+		IconIndex:  req.IconIndex,
+		UpdateDate: time.Now(),
+		UserID:     1,
+		AccountID:  req.AccountID,
 	})
 	if err != nil {
 		u.l.Errorf("create plan error %v", err)
 		return nil, err
 	}
 
-	plans, err := u.r.FindAllPlans()
+	plans, err := u.r.FindAllPlans("2024-10")
 	if err != nil {
 		u.l.Errorf("find plan error: %v", err)
 		return nil, err
@@ -101,7 +113,7 @@ func (u *planUsecase) DeletePlan(deleteId int) (*entities.PlanList, error) {
 		return nil, err
 	}
 
-	plans, err := u.r.FindAllPlans()
+	plans, err := u.r.FindAllPlans("2024-10")
 	if err != nil {
 		u.l.Errorf("find plan error: %v", err)
 		return nil, err

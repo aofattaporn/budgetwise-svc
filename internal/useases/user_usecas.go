@@ -2,6 +2,7 @@ package useases
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities"
@@ -51,13 +52,13 @@ func (u *userUsecase) AddNewSalaryBymonth(req *entities.UserFinancialsReq) (*ent
 	err := u.r.AddNewSalaryBymonth(&entities.UserFinancials{
 		UserId: userId,
 		Salary: req.Salary,
-		Month:  req.Month,
+		Month:  time.Date(req.Month.Year(), req.Month.Month(), 1, 0, 0, 0, 0, req.Month.Location()),
 		Usages: 0,
 	})
 
 	if err != nil {
 		u.l.Errorf("add salary and reset date error: %v", err)
-		return nil, customerrors.BUSINESS_ERROR(err.Error())
+		return nil, customerrors.BUSINESS_ERROR("Duplicate month assignment")
 	}
 
 	return u.GetSalaryAndDateReset(userId, fmt.Sprintf("%d-%02d", req.Month.Year(), req.Month.Month()))

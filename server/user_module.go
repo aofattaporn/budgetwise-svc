@@ -31,7 +31,7 @@ func (m *moduleFactory) UserModule() IUserModule {
 func (m *userModuleModule) Init() {
 
 	// handlers
-	m.r.Get(constants.ROUTE().SALARY, m.h.GetSalary)
 	m.r.Post(constants.ROUTE().UserFin, m.h.AddNewSalaryBymonth)
+	m.r.Get(constants.ROUTE().SALARY, m.h.GetSalary)
 
 }

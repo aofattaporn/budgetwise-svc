@@ -3,6 +3,7 @@ package repositories
 import (
 	"fmt"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/goproject/internal/entities"
 	"gorm.io/gorm"
 )
@@ -38,9 +39,12 @@ func (r *userRepository) GetSalaryAndDateReset(userID int, monthYear string) (*e
 }
 
 func (r *userRepository) AddNewSalaryBymonth(req *entities.UserFinancials) error {
+	// Ensure the month field is set to the first day of the month
+	// req.Month = req.Month.UTC().Truncate(24 * time.Hour)
+
 	err := r.db.Create(&req).Error
 	if err != nil {
-		if err == gorm.ErrDuplicatedKey {
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok && mysqlErr.Number == 1062 {
 			return fmt.Errorf("duplicate entry: %w", err)
 		}
 		return err

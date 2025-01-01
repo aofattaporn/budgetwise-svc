@@ -56,12 +56,13 @@ func (h *userHandler) GetSalary(c *fiber.Ctx) error {
 
 func (h *userHandler) AddNewSalaryBymonth(c *fiber.Ctx) error {
 
-	var req entities.UserFinancialsReq
-	if err := c.BodyParser(&req); err != nil {
-		return customerrors.INVALID_PERAETERS_ERROR("Invalid input parameters")
+	req := new(entities.UserFinancialsReq)
+	if err := c.BodyParser(req); err != nil {
+		h.l.Errorf("error [body-parser]: %v", err)
+		return customerrors.INVALID_PERAETERS_ERROR(err.Error())
 	}
 
-	userInfo, err := h.u.AddNewSalaryBymonth(&req)
+	userInfo, err := h.u.AddNewSalaryBymonth(req)
 	if err != nil {
 		return err
 	}

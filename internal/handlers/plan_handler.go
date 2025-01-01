@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/goproject/internal/constants"
 	"github.com/goproject/internal/customerrors"
 	"github.com/goproject/internal/entities"
 	"github.com/goproject/internal/useases"
@@ -144,10 +145,21 @@ func (h *planHandler) GetPlanById(c *fiber.Ctx) error {
 // @Failure      500  {object}  entities.ErrorResponse  "Internal server error"
 // @Router       /plans [get]
 func (h *planHandler) GetAllPlans(c *fiber.Ctx) error {
-	plans := h.u.GetAllPlans()
+
+	monthYear := c.Query("monthYear")
+	if monthYear == "" {
+		return customerrors.INVALID_PERAETERS_ERROR("Invalid input parameters")
+	}
+
+	plans, err := h.u.GetAllPlans(monthYear)
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(&entities.Response{
-		Code: 1000,
-		Data: plans,
+		Code:        1000,
+		Description: constants.STATUS().SUCCESS,
+		Data:        plans,
 	})
 }
 

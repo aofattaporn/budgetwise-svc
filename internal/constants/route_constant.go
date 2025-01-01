@@ -28,7 +28,7 @@ func ROUTE() *route {
 
 		// users
 		UserFin: "/usersfin",
-		SALARY:  "/users/salary",
+		SALARY:  "/usersfin/salary",
 
 		// accounts
 		ACCOUNTS:           "/accounts",

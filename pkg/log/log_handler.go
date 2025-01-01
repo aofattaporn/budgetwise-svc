@@ -43,7 +43,7 @@ func (l *Logger) Error(msg string) {
 }
 
 func (l *Logger) Errorf(template string, args ...interface{}) {
-	l.logger.Errorf(template, args...)
+	l.logger.Errorf("[ERROR]: "+template, args...)
 }
 
 func (l *Logger) Fatal(msg string) {

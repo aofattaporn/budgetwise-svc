@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 	"runtime/debug"
 	"strings"
@@ -69,6 +70,7 @@ func (h *middlewaresHandler) Logger() fiber.Handler {
 
 		defer func() {
 			h.logger.Info(string(c.Context().Method()) + ":" + string(c.Context().RequestURI()))
+			fmt.Println("=====================================================================")
 		}()
 
 		return c.Next()

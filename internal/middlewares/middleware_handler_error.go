@@ -27,6 +27,15 @@ func MappingError(logger log.ILogger) fiber.ErrorHandler {
 			switch e.ErrorType {
 
 			// *********** business error ***********
+			case customerrors.ERROR_TYPE().DATA_NOT_FOUND:
+				logger.Errorf("data not found : %+v", e)
+				return c.Status(200).JSON(&entities.Response{
+					Code:        1699,
+					Description: e.Description,
+					Data:        nil,
+				})
+
+			// *********** business error ***********
 			case customerrors.ERROR_TYPE().INVALID_PARAMETER_ERROR:
 				logger.Errorf("fiber response error : %+v", e)
 				return c.Status(400).JSON(&entities.ErrorResponse{
